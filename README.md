@@ -23,7 +23,7 @@ _...and more features that are hopefully coming soon:_
 
 ## Requirements
 - Storybook
-- TailwindCSS
+- TailwindCSS v3.X **(not yet compatible with v4)**
 
 ## Installation
 
