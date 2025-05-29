@@ -15,8 +15,8 @@ export const generateThemeMdx = (
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
     return `
-import { Meta } from '@storybook/blocks';
-import { ColorItem, ColorPalette, Title, Subtitle, Typeset } from "@storybook/blocks";
+import { Meta } from '@storybook/addon-docs/blocks';
+import { ColorItem, ColorPalette, Title, Subtitle, Typeset } from "@storybook/addon-docs/blocks";
 
 <Meta title="Theme" />
 <Title>Theme</Title>

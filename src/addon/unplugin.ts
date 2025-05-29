@@ -1,5 +1,5 @@
 import { createUnplugin } from 'unplugin';
-import { serverRequire } from '@storybook/core-common';
+import { serverRequire } from 'storybook/internal/common';
 import { getCsfFromConfig } from './compile';
 import resolveConfig from 'tailwindcss/resolveConfig';
 

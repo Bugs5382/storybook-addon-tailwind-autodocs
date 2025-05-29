@@ -1,4 +1,4 @@
-import type { Indexer, IndexInput } from '@storybook/types';
+import type { Indexer, IndexInput } from 'storybook/internal/types';
 import { TAILWIND_REGEX, vite, webpack } from './unplugin';
 
 const dynamicIndexer: Indexer = {
