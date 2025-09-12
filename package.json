@@ -44,7 +44,7 @@
     "start": "run-p build:watch storybook:rebuild",
     "prerelease": "zx scripts/prepublish-checks.js",
     "release": "npm run build && auto shipit",
-    "storybook:rebuild": "nodemon --watch dist --exec \"storybook dev -p 6006\"",
+    "storybook:rebuild": "nodemon --watch dist --exec \"storybook dev -p 6006 --no-open\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
