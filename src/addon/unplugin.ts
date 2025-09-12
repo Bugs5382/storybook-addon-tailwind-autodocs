@@ -2,8 +2,7 @@ import { createUnplugin } from 'unplugin';
 import { serverRequire } from 'storybook/internal/common';
 import { getCsfFromConfig } from './compile';
 import resolveConfig from 'tailwindcss/resolveConfig';
-
-export const TAILWIND_REGEX = /tailwind\.config\.[jt]s/;
+import { TAILWIND_REGEX } from './constants';
 
 export const unplugin = createUnplugin(() => {
     return {

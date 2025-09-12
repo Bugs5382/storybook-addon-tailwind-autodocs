@@ -5,6 +5,7 @@ import allColors from 'tailwindcss/colors';
  *
  * If a color is a string, it is wrapped in an object with the same key.
  * If a color is an object, it is left as is.
+ * TODO: Add type for output here
  * @param colors
  */
 export const groupTailwindColors = (colors: Record<string, any>) => {

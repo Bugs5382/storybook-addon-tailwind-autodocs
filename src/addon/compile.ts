@@ -1,6 +1,5 @@
-import { compile } from '@storybook/mdx2-csf';
-import { generateThemeMdx } from './mdx';
 import { getTypography, groupTailwindColors } from './helpers';
+import colors from './csf/colors';
 
 export const getCsfFromConfig = async (
     tailwindConfigColors: Record<string, any>,
@@ -9,11 +8,7 @@ export const getCsfFromConfig = async (
     tailwindFontFamilies: Record<string, any>
 ) => {
     const groupedColors = groupTailwindColors(tailwindConfigColors);
-    const typography = getTypography(
-        tailwindFontSizes,
-        tailwindFontWeights,
-        tailwindFontFamilies
-    );
-    const themeMdx = generateThemeMdx(groupedColors, typography);
-    return await compile(themeMdx, {});
+    return colors(groupedColors);
+    // TODO: Typography
+    // TODO: Layouts (breakpoints, spacing, etc.)
 };
