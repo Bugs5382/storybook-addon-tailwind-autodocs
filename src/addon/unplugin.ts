@@ -23,7 +23,8 @@ export const unplugin = createUnplugin(() => {
                 colors,
                 fontSizes,
                 fontWeights,
-                fontFamilies
+                fontFamilies,
+                true
             );
         },
     };

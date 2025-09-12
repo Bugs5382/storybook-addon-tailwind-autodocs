@@ -14,6 +14,7 @@ export const generateThemeMdx = (
     const SampleText =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
+    // NOTE: title set in Meta here must match the title in the index
     return `
 import { Meta } from '@storybook/addon-docs/blocks';
 import { ColorItem, ColorPalette, Title, Subtitle, Typeset } from "@storybook/addon-docs/blocks";

@@ -18,31 +18,47 @@ export const configIndexer: Indexer = {
      * @param options - Options for the indexer.
      */
     createIndex: async (fileName, options: IndexerOptions): Promise<IndexInput[]> => {
-        // TODO: Decide if I want to do it this way, useful for debugging for now
-        // delete require.cache[fileName];
-        // const config = await serverRequire(fileName);
-        // const fullTailwindConfig = resolveConfig(config);
-        // const colors = fullTailwindConfig.theme.colors;
-        // const fontSizes = fullTailwindConfig.theme.fontSize;
-        // const fontWeights = fullTailwindConfig.theme.fontWeight;
-        // const fontFamilies = fullTailwindConfig.theme.fontFamily;
-        // const test = await getCsfFromConfig(colors, fontSizes, fontWeights, fontFamilies);
-        // const indexed = loadCsf(test, {...options,fileName }).parse();
-        // const testing = indexed.indexInputs;
-        // console.log(testing);
-        return [
-
-            {
-                // Colors
-                type: 'docs',
-                importPath: fileName,
-                exportName: 'Colors',
-                title: options.makeTitle('Colors'),
-                tags: ['!autodocs', 'tailwind'],
-                __id: `colors--colors`,
-            }
-
-            // TODO: Typography
-        ];
+        // return createCustomCsfIndex(fileName, options);
+        return createMdxIndex(fileName, options);
     }
 };
+
+const createCustomCsfIndex = async (fileName: string, options: IndexerOptions): Promise<IndexInput[]> => {
+    return [
+        {
+            // Colors
+            type: 'docs',
+                importPath: fileName,
+            exportName: 'Colors',
+            title: options.makeTitle('Colors'),
+            tags: ['!autodocs', 'tailwind'],
+            __id: `colors--colors`,
+        }
+        // TODO: Typography
+    ];
+};
+
+const createMdxIndex = async (fileName: string, options: IndexerOptions) => {
+    // TODO: Decide if I want to do it this way, useful for debugging for now
+    // delete require.cache[fileName];
+    // const config = await serverRequire(fileName);
+    // const fullTailwindConfig = resolveConfig(config);
+    // const colors = fullTailwindConfig.theme.colors;
+    // const fontSizes = fullTailwindConfig.theme.fontSize;
+    // const fontWeights = fullTailwindConfig.theme.fontWeight;
+    // const fontFamilies = fullTailwindConfig.theme.fontFamily;
+    // const test = await getCsfFromConfig(colors, fontSizes, fontWeights, fontFamilies);
+    // const indexed = loadCsf(test, {...options,fileName }).parse();
+    // const testing = indexed.indexInputs;
+    // console.log(testing);
+    return [
+        {
+            // Colors
+            type: 'docs',
+            importPath: fileName,
+            exportName: 'Docs', // must be Docs (or whatever is set as autodocs default name) in order to not generate story
+            title: options.makeTitle('Theme'), // must match the title in the mdx file in order to go to load the mdx file when clicked
+            tags: ['autodocs'], // Note: MUST contain autodocs to generate docs file
+        }
+    ];
+}
