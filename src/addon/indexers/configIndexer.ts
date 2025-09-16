@@ -18,26 +18,30 @@ export const configIndexer: Indexer = {
      * @param options - Options for the indexer.
      */
     createIndex: async (fileName, options: IndexerOptions): Promise<IndexInput[]> => {
-        // return createCustomCsfIndex(fileName, options);
-        return createMdxIndex(fileName, options);
+        return createCustomCsfIndexInputs(fileName, options);
     }
 };
 
-const createCustomCsfIndex = async (fileName: string, options: IndexerOptions): Promise<IndexInput[]> => {
+const createCustomCsfIndexInputs = async (fileName: string, options: IndexerOptions): Promise<IndexInput[]> => {
     return [
         {
             // Colors
             type: 'docs',
                 importPath: fileName,
             exportName: 'Colors',
-            title: options.makeTitle('Colors'),
+            title: options.makeTitle('Theme/Colors'),
             tags: ['!autodocs', 'tailwind'],
             __id: `colors--colors`,
-        }
+        },
         // TODO: Typography
     ];
 };
 
+/**
+ * @deprecated - Using custom CSF index instead
+ * @param fileName
+ * @param options
+ */
 const createMdxIndex = async (fileName: string, options: IndexerOptions) => {
     // TODO: Decide if I want to do it this way, useful for debugging for now
     // delete require.cache[fileName];

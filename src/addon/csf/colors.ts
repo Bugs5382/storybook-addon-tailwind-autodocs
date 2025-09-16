@@ -1,6 +1,8 @@
 /**
  * Basically a CSF file that exports a story rendering the colors
  * @param colors - Array of color groups with key, value, and subtitle
+ *
+ * NOTE: title needs to match
  */
 const colors = (colors: Array<{ key: string; value: Record<string, string>; subtitle: string }>) => {
     return `
@@ -35,26 +37,20 @@ const ColorPalette = ({ children }) => {
 };
 
 export default {
-    title: 'Colors',
+    title: 'Theme/Colors',
     parameters: {
         layout: 'fullscreen',
-        options: {
-          bottomPanelHeight: 0
-        }
+        options: { bottomPanelHeight: 0 }
     }
 };
 
 export const Colors = {
     render: () => {
         const colors = ${JSON.stringify(colors)};
-
         return React.createElement(ColorPalette, null,
             colors.map(({ key, value, subtitle }) =>
                 React.createElement(ColorItem, {
-                    key: key,
-                    title: key,
-                    subtitle: subtitle,
-                    colors: value
+                    key, title: key, subtitle, colors: value
                 })
             )
         );
@@ -62,5 +58,4 @@ export const Colors = {
 };
 `;
 };
-
 export default colors;
