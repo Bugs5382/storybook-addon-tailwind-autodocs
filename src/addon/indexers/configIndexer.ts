@@ -31,7 +31,6 @@ const createCustomCsfIndexInputs = async (fileName: string, options: IndexerOpti
             exportName: 'Colors',
             title: options.makeTitle('Theme/Colors'),
             tags: ['!autodocs', 'tailwind'],
-            __id: `colors--colors`,
         },
         // TODO: Typography
     ];
