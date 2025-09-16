@@ -11,9 +11,19 @@ export const unplugin = createUnplugin(() => {
         loadInclude(id) {
             return TAILWIND_REGEX.test(id);
         },
+
+        resolveId(id) {
+            if (TAILWIND_REGEX.test(id)) {
+                // Return the id with .tsx extension to indicate it's TypeScript JSX
+                return id + '?virtual.tsx';
+            }
+        },
         async load(fileName) {
-            delete require.cache[fileName];
-            const config = await serverRequire(fileName);
+            // Remove the virtual query parameter for processing
+            const cleanFileName = fileName.replace('?virtual.tsx', '')
+
+            delete require.cache[cleanFileName];
+            const config = await serverRequire(cleanFileName);
             const fullTailwindConfig = resolveConfig(config);
             const colors = fullTailwindConfig.theme.colors;
             const fontSizes = fullTailwindConfig.theme.fontSize;
@@ -24,7 +34,6 @@ export const unplugin = createUnplugin(() => {
                 fontSizes,
                 fontWeights,
                 fontFamilies,
-                true
             );
         },
     };
