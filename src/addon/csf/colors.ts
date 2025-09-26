@@ -14,45 +14,8 @@ const colorsCsf = (
     }>
 ) => {
     return `
-import { styled, ThemeProvider, themes, convert, useTheme} from 'storybook/theming';
-
-const Item = styled.div(({theme}) => {
-    console.log('Theme in styled component:', theme.typography);
-    return {
-        marginBottom: '24px',
-        fontFamily: theme.typography.fonts.base,
-    };
-});
-
-const ColorItem = ({ title, subtitle, colors }) => {
-    return (
-        <Item>
-            <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 'bold' }}>{title}</h3>
-            {subtitle && <p style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#666' }}>{subtitle}</p>}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {Object.entries(colors).map(([name, color]) => (
-                    <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <div
-                            style={{
-                                width: '40px',
-                                height: '40px',
-                                backgroundColor: color,
-                                borderRadius: '4px',
-                                border: '1px solid #ddd'
-                            }}
-                        />
-                        <span style={{ fontSize: '12px', marginTop: '4px' }}>{name}</span>
-                        <span style={{ fontSize: '10px', color: '#666' }}>{color}</span>
-                    </div>
-                ))}
-            </div>
-        </Item>
-    );
-};
-
-const ColorPalette = ({ children }) => {
-    return <div style={{ padding: '16px' }}>{children}</div>;
-};
+import { styled, ThemeProvider, themes, ensure, CSSObject} from 'storybook/theming';
+import { ColorPalette, ColorItem } from '@storybook/addon-docs/blocks'
 
 export default {
     title: 'Theme',  
@@ -62,18 +25,8 @@ export default {
     },
     decorators: [
         (Story) => {
-            // TODO: Refactor to 'normal' once this function is baked in: https://github.com/storybookjs/storybook/issues/28664
-            const { window: globalWindow } = global;
-            const getPreferredColorScheme = () => {
-                if (!globalWindow || !globalWindow.matchMedia) return 'light';
-
-                const isDarkThemePreferred = globalWindow.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (isDarkThemePreferred) return 'dark';
-
-                return 'light';
-            };
             return (
-                <ThemeProvider theme={convert(themes[getPreferredColorScheme()])} >
+                <ThemeProvider theme={ensure(themes.light)} >
                     <Story />
                 </ThemeProvider>
             );
@@ -81,20 +34,72 @@ export default {
     ]
 };
 
+
+const Wrapper = styled.div(({ theme }) => ({
+  background: theme.background.content,
+  display: 'flex',
+  flexDirection: 'row-reverse',
+  justifyContent: 'center',
+  padding: '4rem 20px',
+  minHeight: '100vh',
+  boxSizing: 'border-box',
+  gap: '3rem',
+  [\`@media (min-width: 600px)\`]: {}
+}));
+
+const Container = styled.div(() => ({
+    maxWidth: '1000px',
+    width: '100%',
+    minWidth: '0px'
+}));
+
+// Inspired by https://github.com/storybookjs/storybook/blob/main/code/addons/docs/src/blocks/components/DocsPage.tsx
+// Basically what the toGlobalSelector('h1') renders
+const Title = styled.h1(({ theme }) => ({
+    fontFamily: theme.typography.fonts.base,
+    WebkitFontSmoothing: 'antialiased',
+    MozOsxFontSmoothing: 'grayscale',
+    WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
+    WebkitOverflowScrolling: 'touch' as CSSObject['WebkitOverflowScrolling'],
+    margin: '20px 0 8px',
+    padding: 0,
+    cursor: 'text',
+    position: 'relative',
+    color: theme.color.defaultText,
+    '&:first-of-type': {
+      marginTop: 0,
+      paddingTop: 0
+    },
+    '&:hover a.anchor': {
+      textDecoration: 'none'
+    },
+    '& code': {
+      fontSize: 'inherit'
+    },
+    fontSize: \`\${theme.typography.size.l1}px\`,
+    fontWeight: theme.typography.weight.bold,
+}));
+    
+
 export const Colors = {
     render: () => {
-        const colorData = ${JSON.stringify(colors)};
         return (
-            <ColorPalette>
-                {${JSON.stringify(colors)}.map(({ key, value, subtitle }) => (
-                    <ColorItem
-                        key={key}
-                        title={key}
-                        subtitle={subtitle}
-                        colors={value}
-                    />
-                ))}
-            </ColorPalette>
+            <Wrapper>
+                <Container>
+                    <Title>Colors</Title>
+                    <br />
+                    <ColorPalette>
+                        {${JSON.stringify(colors)}.map(({ key, value, subtitle }) => (
+                            <ColorItem
+                                key={key}
+                                title={key}
+                                subtitle={subtitle}
+                                colors={value}
+                            />
+                        ))}
+                    </ColorPalette>
+                </Container>
+            </Wrapper>
         );
     }
 };
