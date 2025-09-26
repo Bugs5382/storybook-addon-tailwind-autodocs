@@ -2,15 +2,31 @@
  * Basically a CSF file that exports a story rendering the colors
  * @param colors - Array of color groups with key, value, and subtitle
  *
- * NOTE: title needs to match
+ * NOTE: title in default export needs to match
+ *
+ * TODO: Fix theming so that we can use whatever the user defines
  */
-const colors = (colors: Array<{ key: string; value: Record<string, string>; subtitle: string }>) => {
+const colorsCsf = (
+    colors: Array<{
+        key: string;
+        value: Record<string, string>;
+        subtitle: string;
+    }>
+) => {
     return `
-import React from 'react';
+import { styled, ThemeProvider, themes, convert, useTheme} from 'storybook/theming';
+
+const Item = styled.div(({theme}) => {
+    console.log('Theme in styled component:', theme.typography);
+    return {
+        marginBottom: '24px',
+        fontFamily: theme.typography.fonts.base,
+    };
+});
 
 const ColorItem = ({ title, subtitle, colors }) => {
     return (
-        <div style={{ marginBottom: '24px' }}>
+        <Item>
             <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 'bold' }}>{title}</h3>
             {subtitle && <p style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#666' }}>{subtitle}</p>}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -30,7 +46,7 @@ const ColorItem = ({ title, subtitle, colors }) => {
                     </div>
                 ))}
             </div>
-        </div>
+        </Item>
     );
 };
 
@@ -39,11 +55,30 @@ const ColorPalette = ({ children }) => {
 };
 
 export default {
-    title: 'Theme/Colors',
+    title: 'Theme',  
     parameters: {
         layout: 'fullscreen',
         options: { bottomPanelHeight: 0 }
-    }
+    },
+    decorators: [
+        (Story) => {
+            // TODO: Refactor to 'normal' once this function is baked in: https://github.com/storybookjs/storybook/issues/28664
+            const { window: globalWindow } = global;
+            const getPreferredColorScheme = () => {
+                if (!globalWindow || !globalWindow.matchMedia) return 'light';
+
+                const isDarkThemePreferred = globalWindow.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (isDarkThemePreferred) return 'dark';
+
+                return 'light';
+            };
+            return (
+                <ThemeProvider theme={convert(themes[getPreferredColorScheme()])} >
+                    <Story />
+                </ThemeProvider>
+            );
+        }
+    ]
 };
 
 export const Colors = {
@@ -51,7 +86,7 @@ export const Colors = {
         const colorData = ${JSON.stringify(colors)};
         return (
             <ColorPalette>
-                {colorData.map(({ key, value, subtitle }) => (
+                {${JSON.stringify(colors)}.map(({ key, value, subtitle }) => (
                     <ColorItem
                         key={key}
                         title={key}
@@ -63,6 +98,10 @@ export const Colors = {
         );
     }
 };
+
+export const Test = {
+    render: () => <div>Test</div>
+}
 `;
 };
-export default colors;
+export default colorsCsf;
