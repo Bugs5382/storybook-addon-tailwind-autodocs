@@ -41,7 +41,7 @@
     "build": "tsup",
     "build:watch": "npm run build -- --watch",
     "test": "vitest",
-    "start": "run-p build:watch storybook:rebuild",
+    "start": "npm run build && run-p build:watch storybook:rebuild",
     "prerelease": "zx scripts/prepublish-checks.js",
     "release": "npm run build && auto shipit",
     "storybook:rebuild": "nodemon --watch dist --exec \"storybook dev -p 6006 --no-open\"",
