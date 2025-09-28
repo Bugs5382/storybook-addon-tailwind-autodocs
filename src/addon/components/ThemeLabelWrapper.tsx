@@ -1,26 +1,15 @@
 import React from 'react';
 
-import { DocumentIcon } from '@storybook/icons'
-import { IndexInput } from 'storybook/internal/types';
+import { API_HashEntry } from 'storybook/internal/types';
 
 interface Props {
-    item: IndexInput;
+    item: API_HashEntry;
 }
 
-const ThemeLabelWrapper = ({ item } : Props) => {
+const ThemeLabelWrapper = ({ item }: Props) => {
     if (item.tags?.includes('tailwind')) {
-        const title = item.name
-        return (
-            <>
-                <a className="tw-autodocs-label">
-                    <div className="tw-autodocs-label-icon">
-                        {/* TODO: Use different icon? */}
-                        <DocumentIcon />
-                    </div>
-                    {title}
-                </a>
-            </>
-        )
+        const title = item.name;
+        return <span>{title}</span>;
     }
 };
 

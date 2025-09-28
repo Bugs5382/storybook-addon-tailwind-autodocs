@@ -1,10 +1,8 @@
-import { addons } from "storybook/manager-api";
-
-import ThemeLabelWrapper from "./components/ThemeLabelWrapper"
+import { addons } from 'storybook/manager-api';
 
 addons.setConfig({
     sidebar: {
-        renderLabel: (item) => ThemeLabelWrapper({ item }),
+        // renderLabel: item => ThemeLabelWrapper({ item }),
     },
 });
 
