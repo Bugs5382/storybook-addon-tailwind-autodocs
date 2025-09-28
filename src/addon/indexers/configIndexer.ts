@@ -1,15 +1,18 @@
-import type { Indexer, IndexerOptions, IndexInput } from 'storybook/internal/types';
+import type {
+    Indexer,
+    IndexerOptions,
+    IndexInput,
+} from 'storybook/internal/types';
 import { serverRequire } from 'storybook/internal/common';
 import { loadCsf } from 'storybook/internal/csf-tools';
 import resolveConfig from 'tailwindcss/resolveConfig';
-import { getCsfFromConfig } from '../compile';
+import { generateCsf } from '../compile';
 import { TAILWIND_REGEX } from '../constants';
 
 /**
  * An indexer that processes tailwind.config.js or tailwind.config.ts files
  */
 export const configIndexer: Indexer = {
-
     test: TAILWIND_REGEX,
 
     /**
@@ -17,27 +20,34 @@ export const configIndexer: Indexer = {
      * @param fileName - The path to the Tailwind CSS configuration file.
      * @param options - Options for the indexer.
      */
-    createIndex: async (fileName, options: IndexerOptions): Promise<IndexInput[]> => {
+    createIndex: async (
+        fileName,
+        options: IndexerOptions
+    ): Promise<IndexInput[]> => {
         return createCustomCsfIndexInputs(fileName, options);
-    }
+    },
 };
 
-const createCustomCsfIndexInputs = async (fileName: string, options: IndexerOptions): Promise<IndexInput[]> => {
+const createCustomCsfIndexInputs = async (
+    fileName: string,
+    options: IndexerOptions
+): Promise<IndexInput[]> => {
+    // logCsfGeneratedIndex(fileName, options); // For testing purposes, to see the generated CSF
     return [
         {
             // Colors
             type: 'docs',
-                importPath: fileName,
+            importPath: fileName,
             exportName: 'Colors',
-            title: options.makeTitle('Theme/Colors'),
+            title: options.makeTitle('Colors'),
             tags: ['!autodocs', 'tailwind'],
         },
         {
             // Typegraphy
             type: 'docs',
             importPath: fileName,
-            exportName: 'Test', // TODO: Fix this, currently just for testing
-            title: options.makeTitle('Theme/Test'), // TODO: Fix this, currently just for testing
+            exportName: 'Typography', // TODO: Fix this, currently just for testing
+            title: options.makeTitle('Typography'), // TODO: Fix this, currently just for testing
             tags: ['!autodocs', 'tailwind'],
         },
 
@@ -45,32 +55,16 @@ const createCustomCsfIndexInputs = async (fileName: string, options: IndexerOpti
     ];
 };
 
-/**
- * @deprecated - Using custom CSF index instead
- * @param fileName
- * @param options
- */
-const createMdxIndex = async (fileName: string, options: IndexerOptions) => {
-    // TODO: Decide if I want to do it this way, useful for debugging for now
-    // delete require.cache[fileName];
-    // const config = await serverRequire(fileName);
-    // const fullTailwindConfig = resolveConfig(config);
-    // const colors = fullTailwindConfig.theme.colors;
-    // const fontSizes = fullTailwindConfig.theme.fontSize;
-    // const fontWeights = fullTailwindConfig.theme.fontWeight;
-    // const fontFamilies = fullTailwindConfig.theme.fontFamily;
-    // const test = await getCsfFromConfig(colors, fontSizes, fontWeights, fontFamilies);
-    // const indexed = loadCsf(test, {...options,fileName }).parse();
-    // const testing = indexed.indexInputs;
-    // console.log(testing);
-    return [
-        {
-            // Colors
-            type: 'docs',
-            importPath: fileName,
-            exportName: 'Docs', // must be Docs (or whatever is set as autodocs default name) in order to not generate story
-            title: options.makeTitle('Theme'), // must match the title in the mdx file in order to go to load the mdx file when clicked
-            tags: ['autodocs'], // Note: MUST contain autodocs to generate docs file
-        }
-    ];
-}
+// For testing purposes, to see the generated CSF
+const logCsfGeneratedIndex = async (
+    fileName: string,
+    options: IndexerOptions
+): void => {
+    delete require.cache[fileName];
+    const config = await serverRequire(fileName);
+    const fullTailwindConfig = resolveConfig(config);
+    const colors = fullTailwindConfig.theme.colors;
+    const test = await generateCsf(colors);
+    const indexed = loadCsf(test, { ...options, fileName }).parse();
+    console.log(indexed.indexInputs);
+};

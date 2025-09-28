@@ -1,6 +1,6 @@
 import { createUnplugin } from 'unplugin';
 import { serverRequire } from 'storybook/internal/common';
-import { getCsfFromConfig } from './compile';
+import { generateCsf } from './compile';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import { TAILWIND_REGEX } from './constants';
 
@@ -14,27 +14,17 @@ export const unplugin = createUnplugin(() => {
 
         resolveId(id) {
             if (TAILWIND_REGEX.test(id)) {
-                // Return the id with .tsx extension to indicate it's TypeScript JSX
+                // Return the id with .tsx extension to indicate its TypeScript JSX
                 return id + '?virtual.tsx';
             }
         },
         async load(fileName) {
-            // Remove the virtual query parameter for processing
-            const cleanFileName = fileName.replace('?virtual.tsx', '')
-
+            const cleanFileName = fileName.replace('?virtual.tsx', '');
             delete require.cache[cleanFileName];
             const config = await serverRequire(cleanFileName);
             const fullTailwindConfig = resolveConfig(config);
             const colors = fullTailwindConfig.theme.colors;
-            const fontSizes = fullTailwindConfig.theme.fontSize;
-            const fontWeights = fullTailwindConfig.theme.fontWeight;
-            const fontFamilies = fullTailwindConfig.theme.fontFamily;
-            return await getCsfFromConfig(
-                colors,
-                fontSizes,
-                fontWeights,
-                fontFamilies,
-            );
+            return await generateCsf(colors);
         },
     };
 });

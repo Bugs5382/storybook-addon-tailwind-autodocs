@@ -1,12 +1,9 @@
 /**
  * Basically a CSF file that exports a story rendering the colors
- * @param colors - Array of color groups with key, value, and subtitle
- *
- * NOTE: title in default export needs to match
- *
- * TODO: Fix theming so that we can use whatever the user defines
+ * @param colors - Array of color groups with key, value, and subtitle*
+ * @returns CSF string
  */
-const colorsCsf = (
+const csf = (
     colors: Array<{
         key: string;
         value: Record<string, string>;
@@ -15,7 +12,7 @@ const colorsCsf = (
 ) => {
     return `
 import { styled, ThemeProvider, themes, ensure, CSSObject} from 'storybook/theming';
-import { ColorPalette, ColorItem } from '@storybook/addon-docs/blocks'
+import { ColorPalette, ColorItem} from '@storybook/addon-docs/blocks'
 
 export default {
     title: 'Theme',  
@@ -104,9 +101,21 @@ export const Colors = {
     }
 };
 
-export const Test = {
-    render: () => <div>Test</div>
+
+export const Typography = {
+    render: () => {
+        return (
+            <Wrapper>
+                <Container>
+                    <Title>Typography</Title>
+                    <br />
+                    <div>TODO</div>
+                </Container>
+            </Wrapper>
+        )
+    }
 }
 `;
 };
-export default colorsCsf;
+// TODO: Add layouts
+export default csf;
