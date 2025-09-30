@@ -1,19 +1,20 @@
 import { createUnplugin } from 'unplugin';
-import { serverRequire } from 'storybook/internal/common';
 import { generateCsf } from './compile';
-import resolveConfig from 'tailwindcss/resolveConfig';
-import { TAILWIND_REGEX } from './constants';
+import { TAILWIND_CONFIG_REGEX } from './constants';
+import { getV3Config } from './getV3Config';
 
-export const unplugin = createUnplugin(() => {
+export const unplugin = createUnplugin((options = {}) => {
+    const { tailwindVersion = 3 } = options;
+    console.log('Tailwind version set to: ', tailwindVersion);
     return {
-        name: 'unplugin-tailwind-autodocs',
+        name: 'unplugin-tailwind-v3-autodocs',
         enforce: 'pre',
         loadInclude(id) {
-            return TAILWIND_REGEX.test(id);
+            return TAILWIND_CONFIG_REGEX.test(id);
         },
 
         resolveId(id) {
-            if (TAILWIND_REGEX.test(id)) {
+            if (TAILWIND_CONFIG_REGEX.test(id)) {
                 // Return the id with .tsx extension to indicate its TypeScript JSX
                 return id + '?virtual.tsx';
             }
@@ -21,8 +22,7 @@ export const unplugin = createUnplugin(() => {
         async load(fileName) {
             const cleanFileName = fileName.replace('?virtual.tsx', '');
             delete require.cache[cleanFileName];
-            const config = await serverRequire(cleanFileName);
-            const fullTailwindConfig = resolveConfig(config);
+            const fullTailwindConfig = await getV3Config(cleanFileName);
             const colors = fullTailwindConfig.theme.colors;
             return await generateCsf(colors);
         },
