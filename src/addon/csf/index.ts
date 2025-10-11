@@ -11,26 +11,22 @@ const csf = (
     }>
 ) => {
     return `
-import { styled, ThemeProvider, themes, ensure, CSSObject} from 'storybook/theming';
-import { ColorPalette, ColorItem} from '@storybook/addon-docs/blocks'
+import { styled, ThemeProvider, themes, ensure } from 'storybook/theming';
+import { ColorPalette, ColorItem } from '@storybook/addon-docs/blocks';
+import { createElement } from 'react';
 
 export default {
-    title: 'Theme',  
+    title: 'Theme',
     parameters: {
         layout: 'fullscreen',
         options: { bottomPanelHeight: 0 }
     },
     decorators: [
         (Story) => {
-            return (
-                <ThemeProvider theme={ensure(themes.light)} >
-                    <Story />
-                </ThemeProvider>
-            );
+            return createElement(ThemeProvider, { theme: ensure(themes.light) }, createElement(Story));
         }
     ]
 };
-
 
 const Wrapper = styled.div(({ theme }) => ({
   background: theme.background.content,
@@ -50,14 +46,12 @@ const Container = styled.div(() => ({
     minWidth: '0px'
 }));
 
-// Inspired by https://github.com/storybookjs/storybook/blob/main/code/addons/docs/src/blocks/components/DocsPage.tsx
-// Basically what the toGlobalSelector('h1') renders
 const Title = styled.h1(({ theme }) => ({
     fontFamily: theme.typography.fonts.base,
     WebkitFontSmoothing: 'antialiased',
     MozOsxFontSmoothing: 'grayscale',
     WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
-    WebkitOverflowScrolling: 'touch' as CSSObject['WebkitOverflowScrolling'],
+    WebkitOverflowScrolling: 'touch',
     margin: '20px 0 8px',
     padding: 0,
     cursor: 'text',
@@ -76,46 +70,40 @@ const Title = styled.h1(({ theme }) => ({
     fontSize: \`\${theme.typography.size.l1}px\`,
     fontWeight: theme.typography.weight.bold,
 }));
-    
 
 export const Colors = {
     render: () => {
-        return (
-            <Wrapper>
-                <Container>
-                    <Title>Colors</Title>
-                    <br />
-                    <ColorPalette>
-                        {${JSON.stringify(colors)}.map(({ key, value, subtitle }) => (
-                            <ColorItem
-                                key={key}
-                                title={key}
-                                subtitle={subtitle}
-                                colors={value}
-                            />
-                        ))}
-                    </ColorPalette>
-                </Container>
-            </Wrapper>
+        return createElement(Wrapper, null,
+            createElement(Container, null,
+                createElement(Title, null, 'Colors'),
+                createElement('br'),
+                createElement(ColorPalette, null,
+                    ${JSON.stringify(colors)}.map(({ key, value, subtitle }) =>
+                        createElement(ColorItem, {
+                            key: key,
+                            title: key,
+                            subtitle: subtitle,
+                            colors: value
+                        })
+                    )
+                )
+            )
         );
     }
 };
 
-
 export const Typography = {
     render: () => {
-        return (
-            <Wrapper>
-                <Container>
-                    <Title>Typography</Title>
-                    <br />
-                    <div>TODO</div>
-                </Container>
-            </Wrapper>
-        )
+        return createElement(Wrapper, null,
+            createElement(Container, null,
+                createElement(Title, null, 'Typography'),
+                createElement('br'),
+                createElement('div', null, 'TODO')
+            )
+        );
     }
-}
+};
 `;
 };
-// TODO: Add layouts
+
 export default csf;

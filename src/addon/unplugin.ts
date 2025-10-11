@@ -1,35 +1,36 @@
 import { createUnplugin } from 'unplugin';
 import { generateCsf } from './compile';
-import { TAILWIND_CONFIG_REGEX } from './constants';
+import { TAILWIND_CONFIG_REGEX, TAILWIND_CSS_REGEX } from './constants';
+import { getV4Config } from './getV4Config';
 import { getV3Config } from './getV3Config';
+import { serverRequire } from 'storybook/internal/common';
 
-export const unplugin = createUnplugin((options = {}) => {
-    const { tailwindVersion = 3 } = options;
-    console.log('Tailwind version set to: ', tailwindVersion);
+const VIRTUAL_PREFIX = '\0unplugin-css-stories:';
+
+export const unplugin = createUnplugin(() => {
     return {
-        name: 'unplugin-tailwind-v3-autodocs',
+        name: 'unplugin-css-stories',
         enforce: 'pre',
-        loadInclude(id) {
-            return TAILWIND_CONFIG_REGEX.test(id);
-        },
-
         resolveId(id) {
-            if (TAILWIND_CONFIG_REGEX.test(id)) {
-                // Return the id with .tsx extension to indicate its TypeScript JSX
-                return id + '?virtual.tsx';
+            if (TAILWIND_CSS_REGEX.test(id)) {
+                return VIRTUAL_PREFIX + id + '.js'; // TODO: Why doesn't this work if its not jsx?
             }
+            return null;
         },
-        async load(fileName) {
-            const cleanFileName = fileName.replace('?virtual.tsx', '');
-            delete require.cache[cleanFileName];
-            const fullTailwindConfig = await getV3Config(cleanFileName);
-            const colors = fullTailwindConfig.theme.colors;
-            return await generateCsf(colors);
+        loadInclude(id) {
+            return id.startsWith(VIRTUAL_PREFIX);
+        },
+        async load(id) {
+            if (id.startsWith(VIRTUAL_PREFIX)) {
+                // Remove the .js extension we added
+                const realPath = id.slice(VIRTUAL_PREFIX.length, -3);
+                console.log(realPath);
+                const config = getV4Config(realPath);
+                const colors = config.theme.colors;
+                return generateCsf(colors); // TODO: Why doesn't this work if its not jsx?
+            }
         },
     };
 });
 
-export const { esbuild } = unplugin;
-export const { webpack } = unplugin;
-export const { rollup } = unplugin;
-export const { vite } = unplugin;
+export const { vite, webpack } = unplugin;

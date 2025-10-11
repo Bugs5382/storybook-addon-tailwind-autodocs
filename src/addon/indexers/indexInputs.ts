@@ -9,22 +9,22 @@ export const createCustomCsfIndexInputs = async (
     options: IndexerOptions
 ): Promise<IndexInput[]> => {
     // logConfigCsfGeneratedIndex(fileName, options); // For testing purposes, to see the generated CSF
-    console.log('Successfully indexed Tailwind: ', fileName);
+    // console.log('Successfully indexed Tailwind: ', fileName);
     return [
         {
             // Colors
             type: 'docs',
             importPath: fileName,
             exportName: 'Colors',
-            title: options.makeTitle('Colors'),
+            title: options.makeTitle('Theme'),
             tags: ['!autodocs', 'tailwind'],
         },
         {
-            // Typegraphy
+            // Typography
             type: 'docs',
             importPath: fileName,
             exportName: 'Typography', // TODO: Fix this, currently just for testing
-            title: options.makeTitle('Typography'), // TODO: Fix this, currently just for testing
+            title: options.makeTitle('Theme'), // TODO: Fix this, currently just for testing
             tags: ['!autodocs', 'tailwind'],
         },
 
