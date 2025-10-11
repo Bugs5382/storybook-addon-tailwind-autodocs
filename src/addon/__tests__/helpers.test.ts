@@ -6,7 +6,7 @@ import {
     getSubtitle,
     getTypography,
     groupTailwindColors,
-} from '../helpers';
+} from '../core/util/helpers';
 import allColors from 'tailwindcss/colors';
 
 describe('getFontFamiliesAsStrings', () => {

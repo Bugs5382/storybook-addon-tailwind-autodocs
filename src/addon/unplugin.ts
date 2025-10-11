@@ -8,11 +8,12 @@ import { serverRequire } from 'storybook/internal/common';
 const VIRTUAL_PREFIX = '\0tailwind-autodocs:'; // TODO: Move to constants
 
 interface AddonOptions {
-    tailwindVersion?: 3 | 4;
+    tailwindVersion: 3 | 4;
 }
 
 const unplugin = createUnplugin((options: AddonOptions) => {
-    const tailwindVersion = options.tailwindVersion || 4;
+    const tailwindVersion = options.tailwindVersion;
+    console.log('gotVersion', tailwindVersion);
 
     if (tailwindVersion === 3) {
         return {
