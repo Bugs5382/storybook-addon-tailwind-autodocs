@@ -32,11 +32,32 @@ const unplugin = createUnplugin((options: AddonOptions) => {
                 if (id.startsWith(VIRTUAL_PREFIX)) {
                     // Remove the .js extension we added
                     const realPath = id.slice(VIRTUAL_PREFIX.length, -3);
-                    delete require.cache[realPath]; // FIXME: Correct for HMR
+
+                    // Watch the config file for all bundlers - mainly for webpack
+                    if (this.addWatchFile) {
+                        this.addWatchFile(realPath);
+                    }
+
+                    // Clear cache on every load
+                    delete require.cache[realPath];
                     const fullTailwindConfig = await getV3Config(realPath);
                     const colors = fullTailwindConfig.theme.colors;
                     return generateCsf(colors); // TODO: Why doesn't this work if its not jsx?
                 }
+            },
+            vite: {
+                handleHotUpdate({ file, server }) {
+                    if (TAILWIND_CONFIG_REGEX.test(file)) {
+                        delete require.cache[file];
+                        const virtualModuleId = VIRTUAL_PREFIX + file + '.js';
+                        const module =
+                            server.moduleGraph.getModuleById(virtualModuleId);
+                        if (module) {
+                            server.moduleGraph.invalidateModule(module);
+                        }
+                        server.ws.send({ type: 'full-reload' });
+                    }
+                },
             },
         };
     }
