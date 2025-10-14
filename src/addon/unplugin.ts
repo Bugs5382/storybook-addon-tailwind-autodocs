@@ -42,7 +42,12 @@ const unplugin = createUnplugin((options: AddonOptions) => {
                     delete require.cache[realPath];
                     const fullTailwindConfig = await getV3Config(realPath);
                     const colors = fullTailwindConfig.theme.colors;
-                    return generateCsf(colors); // TODO: Why doesn't this work if its not jsx?
+                    const twTypography = {
+                        fontSizes: fullTailwindConfig.theme.fontSize,
+                        fontWeights: fullTailwindConfig.theme.fontWeight,
+                        fontFamilies: fullTailwindConfig.theme.fontFamily,
+                    };
+                    return generateCsf(colors, twTypography); // TODO: Why doesn't this work if its not jsx?
                 }
             },
             vite: {

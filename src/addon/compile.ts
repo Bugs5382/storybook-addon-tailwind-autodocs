@@ -1,7 +1,15 @@
-import { groupTailwindColors } from './core/util/helpers';
+import { getTypography, groupTailwindColors } from './core/util/helpers';
 import csf from './csf';
 
-export const generateCsf = (tailwindConfigColors: Record<string, any>) => {
+export const generateCsf = (
+    tailwindConfigColors: Record<string, any>,
+    tailwindTypographyRecord: Record<string, any>
+) => {
     const groupedColors = groupTailwindColors(tailwindConfigColors);
-    return csf(groupedColors);
+    const typography = getTypography(
+        tailwindTypographyRecord.fontSizes,
+        tailwindTypographyRecord.fontWeights,
+        tailwindTypographyRecord.fontFamilies
+    );
+    return csf(groupedColors, typography);
 };
