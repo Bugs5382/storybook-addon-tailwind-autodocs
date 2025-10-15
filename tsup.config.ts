@@ -36,8 +36,8 @@ export default defineConfig(async options => {
         bundler: {
             exportEntries = [],
             managerEntries = [],
-            nodeEntries = []
-        } = {}
+            nodeEntries = [],
+        } = {},
     } = packageJson;
 
     const commonConfig: Options = {
@@ -76,8 +76,8 @@ export default defineConfig(async options => {
         configs.push({
             ...commonConfig,
             entry: managerEntries,
-            format: ["esm"],
-            platform: "browser",
+            format: ['esm'],
+            platform: 'browser',
             target: BROWSER_TARGET,
             external: globalManagerPackages,
         });
@@ -93,6 +93,7 @@ export default defineConfig(async options => {
             format: ['cjs'],
             target: NODE_TARGET,
             platform: 'node',
+            external: ['tailwindcss'],
         });
     }
 
