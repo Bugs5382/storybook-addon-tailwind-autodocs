@@ -1,5 +1,6 @@
 import allColors from 'tailwindcss/colors';
 
+// TODO: add the label to the typography
 /**
  * Group the colors from the resolved Tailwind CSS configuration.
  *

@@ -83,9 +83,14 @@ const unplugin = createUnplugin((options: AddonOptions) => {
                 // Remove the .js extension we added
                 const realPath = id.slice(VIRTUAL_PREFIX.length, -3);
                 console.log(realPath);
-                const config = getV4Config(realPath);
-                const colors = config.theme.colors;
-                return generateCsf(colors); // TODO: Why doesn't this work if its not jsx?
+                const fullTailwindConfig = await getV4Config(realPath);
+                const colors = fullTailwindConfig.theme.colors;
+                const twTypography = {
+                    fontSizes: fullTailwindConfig.theme.fontSize,
+                    fontWeights: fullTailwindConfig.theme.fontWeight,
+                    fontFamilies: fullTailwindConfig.theme.fontFamily,
+                };
+                return generateCsf(colors, twTypography); // TODO: Why doesn't this work if its not jsx?
             }
         },
     };

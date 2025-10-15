@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+    --color-red-ish-100: #ff0040;
+    --color-red-ish-200: #f12000;
+    --color-red-ish-300: #ff3202;
+    --color-red-ish-400: #ff0220;
+    --color-red-ish-500: #ff0120;
+
+    --font-size-xxs: 5rem;
+
+    --font-inter: Inter, sans-serif;
+}
