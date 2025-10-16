@@ -130,11 +130,5 @@ export const getSubtitle = (
         return customColorMessage;
     }
 
-    // FIXME: TS error
-    const tailwindColors = allColors[colorLabel];
-
-    const isDefaultColor =
-        JSON.stringify(tailwindColors) === JSON.stringify(values);
-
-    return isDefaultColor ? defaultColorMessage : customColorMessage;
+    return defaultColorMessage;
 };
