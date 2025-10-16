@@ -93,6 +93,20 @@ const unplugin = createUnplugin((options: AddonOptions) => {
                 return generateCsf(colors, twTypography); // TODO: Why doesn't this work if its not jsx?
             }
         },
+        vite: {
+            handleHotUpdate({ file, server }) {
+                if (TAILWIND_CSS_REGEX.test(file)) {
+                    delete require.cache[file];
+                    const virtualModuleId = VIRTUAL_PREFIX + file + '.js';
+                    const module =
+                        server.moduleGraph.getModuleById(virtualModuleId);
+                    if (module) {
+                        server.moduleGraph.invalidateModule(module);
+                    }
+                    server.ws.send({ type: 'full-reload' });
+                }
+            },
+        },
     };
 });
 
