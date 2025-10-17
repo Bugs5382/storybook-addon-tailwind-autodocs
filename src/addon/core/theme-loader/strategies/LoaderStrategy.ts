@@ -1,0 +1,14 @@
+export abstract class LoaderStrategy {
+    abstract matchingRegex: RegExp;
+    abstract isVersionSupported(version: number): boolean;
+    abstract supportedVersionLabel(): string;
+    isRegexMatch(filePath: string): boolean {
+        return this.matchingRegex.test(filePath);
+    }
+
+    hasMatch(filePaths: readonly string[]): boolean {
+        return filePaths.some(filePath => this.isRegexMatch(filePath));
+    }
+
+    abstract getTailwindConfig(filePath: string): any; // TODO: Update
+}

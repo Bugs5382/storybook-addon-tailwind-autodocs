@@ -1,18 +1,6 @@
 import { readFileSync } from 'fs';
 import defaultTheme from 'tailwindcss/defaultTheme.js';
 
-interface ResolvedConfig {
-    theme: {
-        colors: Record<string, any>;
-        fontSize: Record<string, any>;
-        fontFamily: Record<string, any>;
-        fontWeight: Record<string, any>;
-        screens: Record<string, any>;
-        spacing: Record<string, any>;
-        borderRadius: Record<string, any>;
-    };
-}
-
 const deepMerge = (target: any, source: any): any => {
     const output = { ...target };
 
@@ -145,18 +133,18 @@ export const resolveConfig = (fileName: string): ResolvedConfig => {
                 customTheme.fontFamily || {}
             ),
             fontWeight: defaultTheme.fontWeight || {},
-            screens: deepMerge(
-                defaultTheme.screens || {},
-                customTheme.screens || {}
-            ),
-            spacing: deepMerge(
-                defaultTheme.spacing || {},
-                customTheme.spacing || {}
-            ),
-            borderRadius: deepMerge(
-                defaultTheme.borderRadius || {},
-                customTheme.borderRadius || {}
-            ),
+            // screens: deepMerge(
+            //     defaultTheme.screens || {},
+            //     customTheme.screens || {}
+            // ),
+            // spacing: deepMerge(
+            //     defaultTheme.spacing || {},
+            //     customTheme.spacing || {}
+            // ),
+            // borderRadius: deepMerge(
+            //     defaultTheme.borderRadius || {},
+            //     customTheme.borderRadius || {}
+            // ),
         },
     };
 };
