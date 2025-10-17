@@ -69,7 +69,6 @@ export class TailwindThemeLoader {
             Logger.error(
                 "No Tailwind configuration file specified in stories of Storybook's main.ts."
             );
-            this._strategy = null;
             return;
         }
 
@@ -80,16 +79,16 @@ export class TailwindThemeLoader {
             Logger.warn(
                 `Please make sure Tailwind CSS v${MIN_SUPPORTED_TAILWIND_VERSION}.x or higher is installed to use this addon`
             );
-            this._strategy = null;
             return;
         }
 
         if (matchingStrategies.length > 1) {
             Logger.warn(
-                'Multiple tailwind configuration approaches specified.' +
-                    `Defaulting to installed version (v${installedTailwindMajorVersion}.x). ` +
-                    'For clarity, only specify one configuration approach.'
+                'Multiple tailwind configuration files specified. ' +
+                    `It looks like you have v${installedTailwindMajorVersion}.x installed. Please specify one ` +
+                    'configuration approach (a single CSS or tailwind.config file). For clarity, only specify one configuration approach.'
             );
+            return;
         }
 
         this._strategy = this.getStrategyByVersion(

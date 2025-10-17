@@ -1,11 +1,12 @@
+// TODO: Use as inspo for TailwindPackageVersion testing
+
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { getTailwindVersion, isTailwindV4 } from '../detect-version';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
-
 // Mock fs module
 vi.mock('fs', () => ({
-    readFileSync: vi.fn()
+    readFileSync: vi.fn(),
 }));
 
 const mockReadFileSync = vi.mocked(readFileSync);
@@ -26,15 +27,18 @@ describe('Tailwind Version Detection', () => {
 
             const mockPackageJson = {
                 dependencies: {
-                    'tailwindcss': '^3.4.7'
-                }
+                    tailwindcss: '^3.4.7',
+                },
             };
 
             mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
 
             const version = getTailwindVersion(mockProjectRoot);
             expect(version).toBe('3.4.7');
-            expect(mockReadFileSync).toHaveBeenCalledWith(expectedPath, 'utf-8');
+            expect(mockReadFileSync).toHaveBeenCalledWith(
+                expectedPath,
+                'utf-8'
+            );
         });
 
         it('should detect V4 version from project package.json devDependencies', () => {
@@ -44,8 +48,8 @@ describe('Tailwind Version Detection', () => {
             const mockPackageJson = {
                 dependencies: {},
                 devDependencies: {
-                    'tailwindcss': '~4.0.0-beta.1'
-                }
+                    tailwindcss: '~4.0.0-beta.1',
+                },
             };
 
             mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
@@ -59,17 +63,19 @@ describe('Tailwind Version Detection', () => {
                 { input: '^4.0.0', expected: '4.0.0' },
                 { input: '~3.4.7', expected: '3.4.7' },
                 { input: '>=4.1.0', expected: '4.1.0' },
-                { input: '4.0.0-alpha.1', expected: '4.0.0-alpha.1' }
+                { input: '4.0.0-alpha.1', expected: '4.0.0-alpha.1' },
             ];
 
             testCases.forEach(({ input, expected }) => {
                 const mockPackageJson = {
                     dependencies: {
-                        'tailwindcss': input
-                    }
+                        tailwindcss: input,
+                    },
                 };
 
-                mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
+                mockReadFileSync.mockReturnValue(
+                    JSON.stringify(mockPackageJson)
+                );
 
                 const version = getTailwindVersion('/test/project');
                 expect(version).toBe(expected);
@@ -79,11 +85,11 @@ describe('Tailwind Version Detection', () => {
         it('should throw error when tailwindcss is not in dependencies', () => {
             const mockPackageJson = {
                 dependencies: {
-                    'react': '^18.0.0'
+                    react: '^18.0.0',
                 },
                 devDependencies: {
-                    'typescript': '^5.0.0'
-                }
+                    typescript: '^5.0.0',
+                },
             };
 
             mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
@@ -97,17 +103,19 @@ describe('Tailwind Version Detection', () => {
             const testCases = [
                 { version: '2.2.19', description: 'V2 version' },
                 { version: '^2.0.0', description: 'V2 with caret' },
-                { version: '1.9.6', description: 'V1 version' }
+                { version: '1.9.6', description: 'V1 version' },
             ];
 
             testCases.forEach(({ version, description }) => {
                 const mockPackageJson = {
                     dependencies: {
-                        'tailwindcss': version
-                    }
+                        tailwindcss: version,
+                    },
                 };
 
-                mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
+                mockReadFileSync.mockReturnValue(
+                    JSON.stringify(mockPackageJson)
+                );
 
                 expect(() => getTailwindVersion('/test/project')).toThrow(
                     /Tailwind CSS version .* is not supported. Please upgrade to version 3.0 or higher./
@@ -128,7 +136,9 @@ describe('Tailwind Version Detection', () => {
         it('should throw error for invalid package.json', () => {
             mockReadFileSync.mockReturnValue('invalid json');
 
-            expect(() => getTailwindVersion('/test/project')).toThrow('Invalid package.json file');
+            expect(() => getTailwindVersion('/test/project')).toThrow(
+                'Invalid package.json file'
+            );
         });
 
         it('should use process.cwd() when no projectRoot provided', () => {
@@ -136,22 +146,25 @@ describe('Tailwind Version Detection', () => {
 
             const mockPackageJson = {
                 dependencies: {
-                    'tailwindcss': '^3.4.9'
-                }
+                    tailwindcss: '^3.4.9',
+                },
             };
 
             mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
 
             const version = getTailwindVersion();
             expect(version).toBe('3.4.9');
-            expect(mockReadFileSync).toHaveBeenCalledWith(expectedPath, 'utf-8');
+            expect(mockReadFileSync).toHaveBeenCalledWith(
+                expectedPath,
+                'utf-8'
+            );
         });
 
         it('should accept V3 minimum version (3.0.0)', () => {
             const mockPackageJson = {
                 dependencies: {
-                    'tailwindcss': '3.0.0'
-                }
+                    tailwindcss: '3.0.0',
+                },
             };
 
             mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
@@ -164,7 +177,7 @@ describe('Tailwind Version Detection', () => {
     describe('isTailwindV4', () => {
         it('should return true for V4 versions', () => {
             const mockPackageJson = {
-                dependencies: { 'tailwindcss': '^4.0.0' }
+                dependencies: { tailwindcss: '^4.0.0' },
             };
 
             mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
@@ -173,7 +186,7 @@ describe('Tailwind Version Detection', () => {
 
         it('should return true for V4 beta versions', () => {
             const mockPackageJson = {
-                dependencies: { 'tailwindcss': '4.0.0-beta.1' }
+                dependencies: { tailwindcss: '4.0.0-beta.1' },
             };
 
             mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
@@ -182,7 +195,7 @@ describe('Tailwind Version Detection', () => {
 
         it('should return false for V3 versions', () => {
             const mockPackageJson = {
-                dependencies: { 'tailwindcss': '^3.4.7' }
+                dependencies: { tailwindcss: '^3.4.7' },
             };
 
             mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
@@ -191,7 +204,7 @@ describe('Tailwind Version Detection', () => {
 
         it('should throw error when tailwindcss is not installed', () => {
             const mockPackageJson = {
-                dependencies: { 'react': '^18.0.0' }
+                dependencies: { react: '^18.0.0' },
             };
 
             mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));
@@ -202,7 +215,7 @@ describe('Tailwind Version Detection', () => {
 
         it('should throw error for unsupported versions', () => {
             const mockPackageJson = {
-                dependencies: { 'tailwindcss': '^2.2.19' }
+                dependencies: { tailwindcss: '^2.2.19' },
             };
 
             mockReadFileSync.mockReturnValue(JSON.stringify(mockPackageJson));

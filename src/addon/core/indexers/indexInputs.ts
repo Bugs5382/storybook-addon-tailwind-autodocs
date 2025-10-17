@@ -1,6 +1,6 @@
 import type { IndexerOptions, IndexInput } from 'storybook/internal/types';
 
-export const createCustomCsfIndexInputs = async (
+export const indexInputs = async (
     fileName: string,
     options: IndexerOptions
 ): Promise<IndexInput[]> => {

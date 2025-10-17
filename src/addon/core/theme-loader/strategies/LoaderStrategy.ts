@@ -1,3 +1,5 @@
+import { ResolvedConfig } from '../../../types';
+
 export abstract class LoaderStrategy {
     abstract matchingRegex: RegExp;
     abstract isVersionSupported(version: number): boolean;
@@ -10,5 +12,5 @@ export abstract class LoaderStrategy {
         return filePaths.some(filePath => this.isRegexMatch(filePath));
     }
 
-    abstract getTailwindConfig(filePath: string): any; // TODO: Update
+    abstract getTailwindConfig(filePath: string): Promise<ResolvedConfig>; // TODO: Update
 }

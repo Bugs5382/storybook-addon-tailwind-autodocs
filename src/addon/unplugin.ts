@@ -1,18 +1,7 @@
-import { createUnplugin, UnpluginFactory } from 'unplugin';
+import { createUnplugin } from 'unplugin';
 import { generateCsf } from './compile';
-import {
-    TAILWIND_CONFIG_REGEX,
-    TAILWIND_CSS_REGEX,
-    VIRTUAL_FILE_PREFIX,
-} from './constants';
-import { getV4Config } from './getV4Config';
-import { getV3Config } from './getV3Config';
-import { serverRequire } from 'storybook/internal/common';
-import { LoaderStrategy } from './core/theme-loader/strategies';
-
-interface AddonOptions {
-    loaderStrategy: LoaderStrategy;
-}
+import { VIRTUAL_FILE_PREFIX } from './constants';
+import { AddonOptions } from './types';
 
 const unplugin = createUnplugin((options: AddonOptions) => {
     const loaderStrategy = options.loaderStrategy;
@@ -39,7 +28,7 @@ const unplugin = createUnplugin((options: AddonOptions) => {
                     this.addWatchFile(realPath);
                 }
                 const fullTailwindConfig =
-                    loaderStrategy.getTailwindConfig(realPath);
+                    await loaderStrategy.getTailwindConfig(realPath);
 
                 const colors = fullTailwindConfig.theme.colors;
                 const twTypography = {

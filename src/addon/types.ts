@@ -1,9 +1,15 @@
-interface PackageJson {
+import { LoaderStrategy } from './core/theme-loader';
+
+export interface PackageJson {
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
 }
 
-interface ResolvedConfig {
+export interface AddonOptions {
+    loaderStrategy: LoaderStrategy;
+}
+
+export interface ResolvedConfig {
     theme: {
         colors: Record<string, any>;
         fontSize: Record<string, any>;

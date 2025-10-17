@@ -3,6 +3,7 @@ import { resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { Logger } from '../util';
 import { MIN_SUPPORTED_TAILWIND_VERSION } from '../../constants';
+import { PackageJson } from '../../types';
 
 export class TailwindPackageVersionDetector {
     constructor(private projectRoot?: string) {}

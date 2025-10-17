@@ -1,29 +1,5 @@
 import { readFileSync } from 'fs';
-import defaultTheme from 'tailwindcss/defaultTheme.js';
-
-const deepMerge = (target: any, source: any): any => {
-    const output = { ...target };
-
-    if (isObject(target) && isObject(source)) {
-        Object.keys(source).forEach(key => {
-            if (isObject(source[key])) {
-                if (!(key in target)) {
-                    Object.assign(output, { [key]: source[key] });
-                } else {
-                    output[key] = deepMerge(target[key], source[key]);
-                }
-            } else {
-                Object.assign(output, { [key]: source[key] });
-            }
-        });
-    }
-
-    return output;
-};
-
-const isObject = (item: any): boolean => {
-    return item && typeof item === 'object' && !Array.isArray(item);
-};
+import defaultTheme from 'tailwindcss/defaultTheme.js'; // TODO: npm Mark as external DP
 
 const parseThemeFromCSS = (cssContent: string) => {
     const themeRegex = /@theme\s*{([^}]*)}/s;

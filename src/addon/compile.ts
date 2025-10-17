@@ -1,6 +1,6 @@
 import { getTypography, groupTailwindColors } from './core/util/helpers';
 import csf from './csf';
-
+// TODO: Move into core?
 export const generateCsf = (
     tailwindConfigColors: Record<string, any>,
     tailwindTypographyRecord: Record<string, any>

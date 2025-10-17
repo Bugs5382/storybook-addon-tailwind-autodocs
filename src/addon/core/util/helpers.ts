@@ -1,4 +1,4 @@
-import allColors from 'tailwindcss/colors';
+import allColors from 'tailwindcss/colors'; // TODO: Mark as external dependency
 
 // TODO: add the label to the typography
 /**
