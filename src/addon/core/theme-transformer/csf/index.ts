@@ -1,4 +1,4 @@
-import { Typography } from '../core/util/helpers';
+import { Typography } from '../../util/helpers';
 
 /**
  * Basically a CSF file that exports a story rendering the colors

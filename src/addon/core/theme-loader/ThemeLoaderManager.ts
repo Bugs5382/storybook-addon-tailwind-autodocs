@@ -1,8 +1,4 @@
-import {
-    ConfigLoaderStrategy,
-    CssLoaderStrategy,
-    LoaderStrategy,
-} from './strategies';
+import { ConfigLoader, CssLoader, ThemeLoader } from './loaders';
 import { PresetValue, StorybookConfigRaw } from 'storybook/internal/types';
 import { Logger } from '../util';
 import { TailwindPackageVersionDetector } from '../version-detection';
@@ -10,33 +6,33 @@ import { MIN_SUPPORTED_TAILWIND_VERSION } from '../../constants';
 
 const DEFAULT_STORY_FILES = '**/*.@(mdx|stories.@(mdx|js|jsx|mjs|ts|tsx))';
 
-export class TailwindThemeLoader {
-    private _strategy: LoaderStrategy | null = null;
+export class ThemeLoaderManager {
+    private _loader: ThemeLoader | null = null;
     private tailwindPackageVersionDetector: TailwindPackageVersionDetector;
 
     constructor(
         stories: PresetValue<StorybookConfigRaw['stories']>,
-        strategies?: LoaderStrategy[],
+        loaders?: ThemeLoader[],
         tailwindPackageVersionDetector?: TailwindPackageVersionDetector
     ) {
-        const availableStrategies =
-            strategies && strategies.length > 0
-                ? strategies
-                : [new ConfigLoaderStrategy(), new CssLoaderStrategy()];
+        const availableLoaders =
+            loaders && loaders.length > 0
+                ? loaders
+                : [new ConfigLoader(), new CssLoader()];
 
         this.tailwindPackageVersionDetector =
             tailwindPackageVersionDetector ??
             new TailwindPackageVersionDetector();
 
-        this.selectStrategy(stories, availableStrategies);
+        this.selectLoader(stories, availableLoaders);
 
-        if (this._strategy === null) {
+        if (this._loader === null) {
             Logger.warn('Skipping Tailwind theme detection...');
         }
     }
 
-    getStrategy(): LoaderStrategy | null {
-        return this._strategy;
+    getLoader(): ThemeLoader | null {
+        return this._loader;
     }
 
     extractStoryPaths(
@@ -55,17 +51,17 @@ export class TailwindThemeLoader {
             : [];
     }
 
-    private selectStrategy(
+    private selectLoader(
         stories: PresetValue<StorybookConfigRaw['stories']>,
-        availableStrategies: LoaderStrategy[]
+        availableLoaders: ThemeLoader[]
     ): void {
         const storyFilePaths = this.extractStoryPaths(stories);
 
-        const matchingStrategies = availableStrategies.filter(strategy =>
-            strategy.hasMatch(storyFilePaths)
+        const matchingLoaders = availableLoaders.filter(loader =>
+            loader.hasMatch(storyFilePaths)
         );
 
-        if (matchingStrategies.length === 0) {
+        if (matchingLoaders.length === 0) {
             Logger.error(
                 "No Tailwind configuration file specified in stories of Storybook's main.ts."
             );
@@ -82,7 +78,7 @@ export class TailwindThemeLoader {
             return;
         }
 
-        if (matchingStrategies.length > 1) {
+        if (matchingLoaders.length > 1) {
             Logger.warn(
                 'Multiple tailwind configuration files specified. ' +
                     `It looks like you have v${installedTailwindMajorVersion}.x installed. Please specify one ` +
@@ -91,42 +87,41 @@ export class TailwindThemeLoader {
             return;
         }
 
-        this._strategy = this.getStrategyByVersion(
-            matchingStrategies,
+        this._loader = this.getLoaderByVersion(
+            matchingLoaders,
             installedTailwindMajorVersion,
             storyFilePaths
         );
     }
 
     /**
-     * Select a strategy that supports the installed Tailwind version
-     * @param strategies - Available strategies that matched configuration files
+     * Select a loader that supports the installed Tailwind version
+     * @param loaders - Available loaders that matched configuration files
      * @param version - Installed Tailwind major version
      * @param storyPaths - Story file paths to identify which files are incompatible
-     * @returns A matching strategy or null if none support the installed version
+     * @returns A matching loader or null if none support the installed version
      */
-    private getStrategyByVersion(
-        strategies: LoaderStrategy[],
+    private getLoaderByVersion(
+        loaders: ThemeLoader[],
         version: number,
         storyPaths: string[]
-    ): LoaderStrategy | null {
-        const matchingStrategy =
-            strategies.find(strategy => strategy.isVersionSupported(version)) ??
-            null;
+    ): ThemeLoader | null {
+        const matchingLoader =
+            loaders.find(loader => loader.isVersionSupported(version)) ?? null;
 
-        if (matchingStrategy === null) {
-            strategies.forEach(strategy => {
+        if (matchingLoader === null) {
+            loaders.forEach(loader => {
                 storyPaths
-                    .filter(path => strategy.isRegexMatch(path))
+                    .filter(path => loader.isRegexMatch(path))
                     .forEach(path => {
                         Logger.error(
                             `Version mismatch: Tailwind v${version}.x is installed, but '${path}' ` +
-                                `is only supported by Tailwind ${strategy.supportedVersionLabel()}.`
+                                `is only supported by Tailwind ${loader.supportedVersionLabel()}.`
                         );
                     });
             });
         }
 
-        return matchingStrategy;
+        return matchingLoader;
     }
 }

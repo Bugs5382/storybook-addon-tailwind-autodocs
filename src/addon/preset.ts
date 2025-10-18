@@ -6,7 +6,7 @@ import {
 import { vite } from './unplugin';
 import { configIndexer } from './core/indexers';
 import { cssIndexer } from './core/indexers';
-import { TailwindThemeLoader } from './core/theme-loader/TailwindThemeLoader';
+import { ThemeLoaderManager } from './core/theme-loader';
 
 export const experimental_indexers: Indexer[] = [configIndexer, cssIndexer];
 
@@ -14,10 +14,10 @@ export const viteFinal = async (config: any, options: any) => {
     const { plugins = [] } = config;
     const stories: PresetValue<StorybookConfigRaw['stories']> =
         await options.presets.apply('stories');
-    const themeLoader = new TailwindThemeLoader(stories);
-    const loaderStrategy = themeLoader.getStrategy();
-    if (loaderStrategy === null) return config; // Skip plugin injection
-    plugins.push(vite({ ...options, loaderStrategy }));
+    const themeLoaderManager = new ThemeLoaderManager(stories);
+    const themeLoader = themeLoaderManager.getLoader();
+    if (themeLoader === null) return config; // Skip plugin injection
+    plugins.push(vite({ ...options, themeLoader: themeLoader }));
     config.plugins = plugins;
     return config;
 };

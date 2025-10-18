@@ -1,10 +1,10 @@
-import { LoaderStrategy } from './LoaderStrategy';
+import { ThemeLoader } from './ThemeLoader';
 import { TAILWIND_CSS_REGEX } from '../../../constants';
 import { ResolvedConfig } from '../../../types';
 import { readFileSync } from 'fs';
 import defaultTheme from 'tailwindcss/defaultTheme.js'; // TODO: Mark as external dep
 
-export class CssLoaderStrategy extends LoaderStrategy {
+export class CssLoader extends ThemeLoader {
     matchingRegex: RegExp = TAILWIND_CSS_REGEX;
 
     isVersionSupported(version: number): boolean {
@@ -15,7 +15,7 @@ export class CssLoaderStrategy extends LoaderStrategy {
         return 'v4+';
     }
 
-    getTailwindConfig(filePath: string): Promise<ResolvedConfig> {
+    getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
         const cssContent = readFileSync(filePath, 'utf-8');
         const customTheme = this.parseThemeFromCSS(cssContent);
 

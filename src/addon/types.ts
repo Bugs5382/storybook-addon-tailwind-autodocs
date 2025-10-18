@@ -1,4 +1,4 @@
-import { LoaderStrategy } from './core/theme-loader';
+import { ThemeLoader } from './core/theme-loader';
 
 export interface PackageJson {
     dependencies?: Record<string, string>;
@@ -6,7 +6,7 @@ export interface PackageJson {
 }
 
 export interface AddonOptions {
-    loaderStrategy: LoaderStrategy;
+    themeLoader: ThemeLoader;
 }
 
 export interface ResolvedConfig {

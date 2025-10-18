@@ -2,14 +2,17 @@ import { createUnplugin } from 'unplugin';
 import { generateCsf } from './compile';
 import { VIRTUAL_FILE_PREFIX } from './constants';
 import { AddonOptions } from './types';
+import { ThemeTransformer } from './core/theme-transformer/ThemeTransformer';
 
 const unplugin = createUnplugin((options: AddonOptions) => {
-    const loaderStrategy = options.loaderStrategy;
+    const themeLoader = options.themeLoader;
+    const themeTransformer = new ThemeTransformer(); // TODO: Remember that any options passed in here could also be passed in by the user
+
     return {
         name: 'unplugin-tailwind-autodocs',
         enforce: 'pre',
         resolveId(id) {
-            if (loaderStrategy.isRegexMatch(id)) {
+            if (themeLoader.isRegexMatch(id)) {
                 return VIRTUAL_FILE_PREFIX + id + '.js'; // TODO: Why doesn't this work if its not jsx?
             }
             return null;
@@ -28,20 +31,14 @@ const unplugin = createUnplugin((options: AddonOptions) => {
                     this.addWatchFile(realPath);
                 }
                 const fullTailwindConfig =
-                    await loaderStrategy.getTailwindConfig(realPath);
+                    await themeLoader.getTailwindTheme(realPath);
 
-                const colors = fullTailwindConfig.theme.colors;
-                const twTypography = {
-                    fontSizes: fullTailwindConfig.theme.fontSize,
-                    fontWeights: fullTailwindConfig.theme.fontWeight,
-                    fontFamilies: fullTailwindConfig.theme.fontFamily,
-                };
-                return generateCsf(colors, twTypography); // TODO: Why doesn't this work if its not jsx?
+                return themeTransformer.transformToCsf(fullTailwindConfig); // TODO: Why doesn't this work if its not jsx?
             }
         },
         vite: {
             handleHotUpdate({ file, server }) {
-                if (loaderStrategy.isRegexMatch(file)) {
+                if (themeLoader.isRegexMatch(file)) {
                     delete require.cache[file];
                     const virtualModuleId = VIRTUAL_FILE_PREFIX + file + '.js';
                     const module =

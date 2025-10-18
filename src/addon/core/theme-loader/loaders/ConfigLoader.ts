@@ -1,9 +1,9 @@
-import { LoaderStrategy } from './LoaderStrategy';
+import { ThemeLoader } from './ThemeLoader';
 import { TAILWIND_CONFIG_REGEX } from '../../../constants';
 import { ResolvedConfig } from '../../../types';
 import { serverRequire } from 'storybook/internal/common';
 
-export class ConfigLoaderStrategy extends LoaderStrategy {
+export class ConfigLoader extends ThemeLoader {
     matchingRegex: RegExp = TAILWIND_CONFIG_REGEX;
 
     isVersionSupported(version: number): boolean {
@@ -14,7 +14,7 @@ export class ConfigLoaderStrategy extends LoaderStrategy {
         return 'v3';
     }
 
-    async getTailwindConfig(filePath: string): Promise<ResolvedConfig> {
+    async getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
         const resolveConfig = await import('tailwindcss/resolveConfig.js'); // FIXME: ts error for external dep
         const config = await serverRequire(filePath);
         const resolvedConfig = resolveConfig.default(config);

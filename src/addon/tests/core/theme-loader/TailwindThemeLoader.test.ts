@@ -1,11 +1,11 @@
-import { TailwindThemeLoader } from '../../../core/theme-loader/TailwindThemeLoader';
+import { ThemeLoaderManager } from '../../../core/theme-loader/ThemeLoaderManager';
 import { describe, expect, it } from 'vitest';
 
 describe('TailwindThemeLoader', () => {
     // TODO: constructor tests
     describe('extractStoryPaths', () => {
         it('should return empty array for non-array stories', () => {
-            const loader = new TailwindThemeLoader(undefined);
+            const loader = new ThemeLoaderManager(undefined);
             const result = loader.extractStoryPaths(undefined);
 
             expect(result).toEqual([]);
@@ -13,7 +13,7 @@ describe('TailwindThemeLoader', () => {
 
         it('should extract string stories', () => {
             const stories = ['src/stories/**/*.stories.tsx'];
-            const loader = new TailwindThemeLoader(stories);
+            const loader = new ThemeLoaderManager(stories);
             const result = (loader as any).extractStoryPaths(stories);
 
             expect(result).toEqual(['src/stories/**/*.stories.tsx']);
@@ -26,7 +26,7 @@ describe('TailwindThemeLoader', () => {
                     files: '*.stories.ts',
                 },
             ];
-            const loader = new TailwindThemeLoader(stories);
+            const loader = new ThemeLoaderManager(stories);
             const result = (loader as any).extractStoryPaths(stories);
 
             expect(result).toEqual(['./src/components/*.stories.ts']);
@@ -38,7 +38,7 @@ describe('TailwindThemeLoader', () => {
                     directory: './src/components',
                 },
             ];
-            const loader = new TailwindThemeLoader(stories);
+            const loader = new ThemeLoaderManager(stories);
             const result = (loader as any).extractStoryPaths(stories);
 
             expect(result).toEqual([
@@ -58,7 +58,7 @@ describe('TailwindThemeLoader', () => {
                     directory: './src/pages',
                 },
             ];
-            const loader = new TailwindThemeLoader(stories);
+            const loader = new ThemeLoaderManager(stories);
             const result = (loader as any).extractStoryPaths(stories);
 
             expect(result).toEqual([

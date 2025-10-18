@@ -1,9 +1,10 @@
 import { ResolvedConfig } from '../../../types';
 
-export abstract class LoaderStrategy {
+export abstract class ThemeLoader {
     abstract matchingRegex: RegExp;
     abstract isVersionSupported(version: number): boolean;
     abstract supportedVersionLabel(): string;
+
     isRegexMatch(filePath: string): boolean {
         return this.matchingRegex.test(filePath);
     }
@@ -12,5 +13,5 @@ export abstract class LoaderStrategy {
         return filePaths.some(filePath => this.isRegexMatch(filePath));
     }
 
-    abstract getTailwindConfig(filePath: string): Promise<ResolvedConfig>; // TODO: Update
+    abstract getTailwindTheme(filePath: string): Promise<ResolvedConfig>; // TODO: Update
 }

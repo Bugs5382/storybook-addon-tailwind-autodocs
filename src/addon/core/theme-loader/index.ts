@@ -1,2 +1,2 @@
-export { TailwindThemeLoader } from './TailwindThemeLoader';
-export type { LoaderStrategy } from './strategies';
+export { ThemeLoaderManager } from './ThemeLoaderManager';
+export type { ThemeLoader } from './loaders';
