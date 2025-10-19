@@ -6,7 +6,7 @@ import { MIN_SUPPORTED_TAILWIND_VERSION } from '../../constants';
 import { PackageJson } from '../../types';
 
 export class TailwindPackageVersionDetector {
-    constructor(private projectRoot?: string) {}
+    public constructor(private projectRoot?: string) {}
 
     /**
      * @returns the major version (>3) of the installed package, or null if not supported / found / an error has occurred.

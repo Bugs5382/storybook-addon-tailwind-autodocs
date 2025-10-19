@@ -4,17 +4,17 @@ import { ResolvedConfig } from '../../../types';
 import { serverRequire } from 'storybook/internal/common';
 
 export class ConfigLoader extends ThemeLoader {
-    matchingRegex: RegExp = TAILWIND_CONFIG_REGEX;
+    public matchingRegex: RegExp = TAILWIND_CONFIG_REGEX;
 
-    isVersionSupported(version: number): boolean {
+    public isVersionSupported(version: number): boolean {
         return version === 3;
     }
 
-    supportedVersionLabel(): string {
+    public supportedVersionLabel(): string {
         return 'v3';
     }
 
-    async getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
+    public async getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
         const resolveConfig = await import('tailwindcss/resolveConfig.js'); // FIXME: ts error for external dep
         const config = await serverRequire(filePath);
         const resolvedConfig = resolveConfig.default(config);

@@ -1,16 +1,18 @@
 import { ResolvedConfig, Typography } from '../../types';
 import csf from './csf';
-import allColors from 'tailwindcss/colors';
+import allColors from 'tailwindcss/colors'; // TODO: Fix ts error
 import { UnitConverter } from '../../util';
 
 export class ThemeTransformer {
     private readonly unitConverter: UnitConverter;
 
-    constructor(unitConverter?: UnitConverter) {
+    public constructor(unitConverter?: UnitConverter) {
         this.unitConverter = unitConverter || new UnitConverter();
     }
 
-    transformToCsf(config: ResolvedConfig) {
+    // TODO: add better typing for colors and typography
+
+    public transformToCsf(config: ResolvedConfig) {
         const colors = config.theme.colors;
         const twTypography = {
             fontSizes: config.theme.fontSize,
@@ -45,6 +47,7 @@ export class ThemeTransformer {
     }
 
     private getColorSubtitle(colorLabel: string): string {
+        // TODO: Improve detection of default vs custom colors + import
         return allColors.hasOwnProperty(colorLabel)
             ? 'Default color from Tailwind CSS'
             : 'Custom color';
@@ -55,6 +58,7 @@ export class ThemeTransformer {
         fontWeights: Record<string, any>,
         fontFamilies: Record<string, any>
     ): Typography {
+        // TODO: Improve getTypography
         const extractedFontSizes = this.extractFontSizes(fontSizes);
         const fontFamilyStrings = this.getFontFamiliesAsStrings(fontFamilies);
         return {

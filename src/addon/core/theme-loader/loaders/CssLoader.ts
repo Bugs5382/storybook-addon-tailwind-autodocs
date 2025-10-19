@@ -5,17 +5,17 @@ import { readFileSync } from 'fs';
 import defaultTheme from 'tailwindcss/defaultTheme.js'; // TODO: Mark as external dep
 
 export class CssLoader extends ThemeLoader {
-    matchingRegex: RegExp = TAILWIND_CSS_REGEX;
+    public matchingRegex: RegExp = TAILWIND_CSS_REGEX;
 
-    isVersionSupported(version: number): boolean {
+    public isVersionSupported(version: number): boolean {
         return version >= 4;
     }
 
-    supportedVersionLabel(): string {
+    public supportedVersionLabel(): string {
         return 'v4+';
     }
 
-    getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
+    public getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
         const cssContent = readFileSync(filePath, 'utf-8');
         const customTheme = this.parseThemeFromCSS(cssContent);
 

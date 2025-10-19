@@ -1,7 +1,7 @@
 import { ConfigLoader, CssLoader, ThemeLoader } from './loaders';
 import { PresetValue, StorybookConfigRaw } from 'storybook/internal/types';
 import { Logger } from '../../util';
-import { TailwindPackageVersionDetector } from '../version-detection';
+import { TailwindPackageVersionDetector } from '../package-detection';
 import { MIN_SUPPORTED_TAILWIND_VERSION } from '../../constants';
 
 const DEFAULT_STORY_FILES = '**/*.@(mdx|stories.@(mdx|js|jsx|mjs|ts|tsx))';
@@ -10,7 +10,7 @@ export class ThemeLoaderManager {
     private _loader: ThemeLoader | null = null;
     private tailwindPackageVersionDetector: TailwindPackageVersionDetector;
 
-    constructor(
+    public constructor(
         stories: PresetValue<StorybookConfigRaw['stories']>,
         loaders?: ThemeLoader[],
         tailwindPackageVersionDetector?: TailwindPackageVersionDetector
@@ -31,11 +31,12 @@ export class ThemeLoaderManager {
         }
     }
 
-    getLoader(): ThemeLoader | null {
+    public getLoader(): ThemeLoader | null {
         return this._loader;
     }
 
-    extractStoryPaths(
+    // TODO: Tests
+    public extractStoryPaths(
         stories: PresetValue<StorybookConfigRaw['stories']>
     ): string[] {
         // Extract file paths from stories configuration
