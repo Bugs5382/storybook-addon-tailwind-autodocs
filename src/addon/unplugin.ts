@@ -1,5 +1,4 @@
 import { createUnplugin } from 'unplugin';
-import { generateCsf } from './compile';
 import { VIRTUAL_FILE_PREFIX } from './constants';
 import { AddonOptions } from './types';
 import { ThemeTransformer } from './core/theme-transformer/ThemeTransformer';

@@ -1,4 +1,4 @@
-import { Typography } from '../../util/helpers';
+import { Typography } from '../../../types';
 
 /**
  * Basically a CSF file that exports a story rendering the colors
@@ -17,7 +17,6 @@ const csf = (
     const fontSizes = Object.values(typography.size);
     const fontWeights = Object.entries(typography.weight);
     const fontFamilies = Object.entries(typography.type);
-    console.log(fontFamilies);
     const sampleText =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 

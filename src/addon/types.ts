@@ -20,3 +20,9 @@ export interface ResolvedConfig {
         // borderRadius: Record<string, any>;
     };
 }
+
+export interface Typography {
+    type: Record<string, string>;
+    weight: Record<string, string>;
+    size: Record<string, string>;
+}
