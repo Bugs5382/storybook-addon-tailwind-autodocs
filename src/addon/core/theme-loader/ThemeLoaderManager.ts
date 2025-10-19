@@ -1,6 +1,6 @@
 import { ConfigLoader, CssLoader, ThemeLoader } from './loaders';
 import { PresetValue, StorybookConfigRaw } from 'storybook/internal/types';
-import { Logger } from '../util';
+import { Logger } from '../../util';
 import { TailwindPackageVersionDetector } from '../version-detection';
 import { MIN_SUPPORTED_TAILWIND_VERSION } from '../../constants';
 

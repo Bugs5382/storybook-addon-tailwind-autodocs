@@ -4,8 +4,8 @@ import {
     StorybookConfigRaw,
 } from 'storybook/internal/types';
 import { vite } from './unplugin';
-import { configIndexer } from './core/indexers';
-import { cssIndexer } from './core/indexers';
+import { configIndexer } from './indexers';
+import { cssIndexer } from './indexers';
 import { ThemeLoaderManager } from './core/theme-loader';
 
 export const experimental_indexers: Indexer[] = [configIndexer, cssIndexer];

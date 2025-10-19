@@ -8,7 +8,7 @@ import {
     getSubtitle,
     getTypography,
     groupTailwindColors,
-} from '../core/util/helpers';
+} from '../util/helpers';
 import allColors from 'tailwindcss/colors';
 
 // TODO: rethink the labelling

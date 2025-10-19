@@ -3,7 +3,7 @@ import type {
     IndexerOptions,
     IndexInput,
 } from 'storybook/internal/types';
-import { TAILWIND_CSS_REGEX } from '../../constants';
+import { TAILWIND_CSS_REGEX } from '../constants';
 import { indexInputs } from './indexInputs';
 
 export const cssIndexer: Indexer = {
