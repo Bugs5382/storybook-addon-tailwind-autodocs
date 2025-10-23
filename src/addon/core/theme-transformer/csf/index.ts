@@ -1,19 +1,7 @@
 import { Typography } from '../../../types';
+import { Color } from '../Color';
 
-/**
- * Basically a CSF file that exports a story rendering the colors
- * @param colors - Array of color groups with key, value, and subtitle*
- * @param typography - TODO
- * @returns CSF string
- */
-const csf = (
-    colors: Array<{
-        key: string;
-        value: Record<string, string>;
-        subtitle: string;
-    }>,
-    typography: Typography
-) => {
+const csf = (colors: Color[], typography: Typography) => {
     const fontSizes = Object.values(typography.size);
     const fontWeights = Object.entries(typography.weight);
     const fontFamilies = Object.entries(typography.type);
@@ -90,12 +78,12 @@ export const Colors = {
                 createElement(Title, null, 'Colors'),
                 createElement('br'),
                 createElement(ColorPalette, null,
-                    ${JSON.stringify(colors)}.map(({ key, value, subtitle }) =>
+                    ${JSON.stringify(colors)}.map((color) =>
                         createElement(ColorItem, {
-                            key: key,
-                            title: key,
-                            subtitle: subtitle,
-                            colors: value
+                            key: color.baseName,
+                            title: color.baseName,
+                            subtitle: color.subtitle,
+                            colors: color.shades
                         })
                     )
                 )

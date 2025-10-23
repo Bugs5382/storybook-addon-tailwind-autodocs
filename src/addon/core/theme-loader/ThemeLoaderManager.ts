@@ -12,13 +12,9 @@ export class ThemeLoaderManager {
 
     public constructor(
         stories: PresetValue<StorybookConfigRaw['stories']>,
-        loaders?: ThemeLoader[],
         tailwindPackageVersionDetector?: TailwindPackageVersionDetector
     ) {
-        const availableLoaders =
-            loaders && loaders.length > 0
-                ? loaders
-                : [new ConfigLoader(), new CssLoader()];
+        const availableLoaders = [new ConfigLoader(), new CssLoader()];
 
         this.tailwindPackageVersionDetector =
             tailwindPackageVersionDetector ??
@@ -35,7 +31,6 @@ export class ThemeLoaderManager {
         return this._loader;
     }
 
-    // TODO: Tests
     public extractStoryPaths(
         stories: PresetValue<StorybookConfigRaw['stories']>
     ): string[] {

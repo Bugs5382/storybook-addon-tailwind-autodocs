@@ -15,9 +15,9 @@ export class ConfigLoader extends ThemeLoader {
     }
 
     public async getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
-        const resolveConfig = await import('tailwindcss/resolveConfig.js'); // FIXME: ts error for external dep
+        const resolveConfig = require('tailwindcss/resolveConfig');
         const config = await serverRequire(filePath);
-        const resolvedConfig = resolveConfig.default(config);
+        const resolvedConfig = resolveConfig(config);
 
         return {
             theme: {

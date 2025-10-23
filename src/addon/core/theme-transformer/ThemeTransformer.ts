@@ -1,7 +1,7 @@
 import { ResolvedConfig, Typography } from '../../types';
 import csf from './csf';
-import allColors from 'tailwindcss/colors'; // TODO: Fix ts error
 import { UnitConverter } from '../../util';
+import { Color } from './Color';
 
 export class ThemeTransformer {
     private readonly unitConverter: UnitConverter;
@@ -10,47 +10,31 @@ export class ThemeTransformer {
         this.unitConverter = unitConverter || new UnitConverter();
     }
 
-    // TODO: add better typing for colors and typography
-
-    public transformToCsf(config: ResolvedConfig) {
-        const colors = config.theme.colors;
-        const twTypography = {
-            fontSizes: config.theme.fontSize,
-            fontWeights: config.theme.fontWeight,
-            fontFamilies: config.theme.fontFamily,
-        };
-
-        const groupedColors = this.groupColors(colors);
+    public transformToCsf(config: ResolvedConfig): string {
+        const groupedColors = this.groupColors(config.theme.colors);
         const typography = this.getTypography(
-            twTypography.fontSizes,
-            twTypography.fontWeights,
-            twTypography.fontFamilies
+            config.theme.fontSize,
+            config.theme.fontWeight,
+            config.theme.fontFamily
         );
+        // console.log(typography);
         return csf(groupedColors, typography);
     }
 
-    private groupColors(colors: Record<string, any>) {
+    private groupColors(colors: Record<string, any>): Color[] {
         const groupedColors: Record<string, Record<string, string>> = {};
         for (const key in colors) {
-            const value = colors[key];
-            if (typeof value === 'object') {
-                groupedColors[key] = value;
+            const values = colors[key];
+            if (typeof values === 'object') {
+                groupedColors[key] = values;
             } else {
-                groupedColors[key] = { [key]: value };
+                // if it's a string, just pair it as object with color name to string
+                groupedColors[key] = { [key]: values };
             }
         }
-        return Object.entries(groupedColors).map(([key, value]) => ({
-            key,
-            value,
-            subtitle: this.getColorSubtitle(key),
-        }));
-    }
-
-    private getColorSubtitle(colorLabel: string): string {
-        // TODO: Improve detection of default vs custom colors + import
-        return allColors.hasOwnProperty(colorLabel)
-            ? 'Default color from Tailwind CSS'
-            : 'Custom color';
+        return Object.entries(groupedColors).map(
+            ([key, value]) => new Color(key, value)
+        );
     }
 
     private getTypography(
@@ -58,7 +42,7 @@ export class ThemeTransformer {
         fontWeights: Record<string, any>,
         fontFamilies: Record<string, any>
     ): Typography {
-        // TODO: Improve getTypography
+        // TODO: Improve this method + write tests for below
         const extractedFontSizes = this.extractFontSizes(fontSizes);
         const fontFamilyStrings = this.getFontFamiliesAsStrings(fontFamilies);
         return {

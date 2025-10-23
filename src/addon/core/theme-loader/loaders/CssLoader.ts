@@ -2,7 +2,6 @@ import { ThemeLoader } from './ThemeLoader';
 import { TAILWIND_CSS_REGEX } from '../../../constants';
 import { ResolvedConfig } from '../../../types';
 import { readFileSync } from 'fs';
-import defaultTheme from 'tailwindcss/defaultTheme.js'; // TODO: Mark as external dep
 
 export class CssLoader extends ThemeLoader {
     public matchingRegex: RegExp = TAILWIND_CSS_REGEX;
@@ -15,9 +14,12 @@ export class CssLoader extends ThemeLoader {
         return 'v4+';
     }
 
+    // TODO: Extract parser
     public getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
         const cssContent = readFileSync(filePath, 'utf-8');
         const customTheme = this.parseThemeFromCSS(cssContent);
+
+        const defaultTheme = require('tailwindcss/defaultTheme');
 
         // Get base colors
         const baseColors =
@@ -25,7 +27,7 @@ export class CssLoader extends ThemeLoader {
                 ? defaultTheme.colors()
                 : defaultTheme.colors || {};
 
-        return {
+        return Promise.resolve({
             theme: {
                 colors: this.deepMerge(baseColors, customTheme.colors || {}),
                 fontSize: this.deepMerge(
@@ -37,6 +39,7 @@ export class CssLoader extends ThemeLoader {
                     customTheme.fontFamily || {}
                 ),
                 fontWeight: defaultTheme.fontWeight || {},
+                // TODO: Below is for future
                 // screens: this.deepMerge(
                 //     defaultTheme.screens || {},
                 //     customTheme.screens || {}
@@ -50,7 +53,7 @@ export class CssLoader extends ThemeLoader {
                 //     customTheme.borderRadius || {}
                 // ),
             },
-        };
+        });
     }
     // TODO: Move everything here down into a parser class
     private parseThemeFromCSS = (cssContent: string) => {

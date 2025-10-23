@@ -15,9 +15,9 @@ export interface ResolvedConfig {
         fontSize: Record<string, any>;
         fontFamily: Record<string, any>;
         fontWeight: Record<string, any>;
-        // screens: Record<string, any>;
-        // spacing: Record<string, any>;
-        // borderRadius: Record<string, any>;
+        // screens: Record<string, any>; // TODO
+        // spacing: Record<string, any>; // TODO
+        // borderRadius: Record<string, any>; // TODO
     };
 }
 
@@ -26,3 +26,14 @@ export interface Typography {
     weight: Record<string, string>;
     size: Record<string, string>;
 }
+
+export type SupportedFontUnit =
+    | 'rem'
+    | 'em'
+    | 'px'
+    | 'pt'
+    | 'cm'
+    | 'mm'
+    | 'in'
+    | 'pc'
+    | '%';

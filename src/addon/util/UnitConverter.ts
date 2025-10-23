@@ -1,11 +1,12 @@
+import { SupportedFontUnit } from '../types';
+
 export class UnitConverter {
-    private readonly baseRatio: number;
-    private readonly conversionRatios: ReadonlyMap<string, number>;
+    private readonly conversionRatios: ReadonlyMap<SupportedFontUnit, number>;
+    private static readonly defaultErrorSize = '12px';
+    private static readonly sizeRegex = /^([+-]?[\d.]+)([a-z%]+)$/i;
 
     constructor(baseRatio: number = 16) {
-        this.baseRatio = baseRatio;
-        // TODO: Add support for other units (or use library which already does this)
-        this.conversionRatios = new Map([
+        this.conversionRatios = new Map<SupportedFontUnit, number>([
             ['rem', baseRatio],
             ['em', baseRatio],
             ['px', 1],
@@ -14,28 +15,26 @@ export class UnitConverter {
             ['mm', 3.77953], // 1mm = 3.77953px
             ['in', 96], // 1in = 96px
             ['pc', 16], // 1pc = 16px
-            ['%', baseRatio * 0.16], // Assuming 1% of 16px base font size
+            ['%', baseRatio * 0.01], // Assuming 1% of 16px base font size
         ]);
     }
 
+    /**
+     * Converts a CSS size string to px.
+     * @param size CSS size string (e.g. '2rem', '10px')
+     * @returns px value as string (e.g. '32px'), or default error size if invalid
+     */
     toPx(size: string): string {
-        const defaultErrorSize = '12px';
-        const match = size.match(/^(-?[\d.]+)([a-z%]+)$/i);
-        if (!match) {
-            return defaultErrorSize; // Return original if not a size value
-        }
+        const normalized = size.trim();
+        const match = UnitConverter.sizeRegex.exec(normalized);
+        if (!match) return UnitConverter.defaultErrorSize;
 
         const [, valueStr, unit] = match;
         const value = parseFloat(valueStr);
+        if (isNaN(value)) return UnitConverter.defaultErrorSize;
 
-        if (isNaN(value)) {
-            return defaultErrorSize;
-        }
-
-        const ratio = this.conversionRatios.get(unit);
-        if (ratio === undefined) {
-            return defaultErrorSize; // Return original for unsupported units
-        }
+        const ratio = this.conversionRatios.get(unit as SupportedFontUnit);
+        if (ratio === undefined) return UnitConverter.defaultErrorSize;
 
         const pxValue = value * ratio;
         return `${Math.round(pxValue * 10000) / 10000}px`;

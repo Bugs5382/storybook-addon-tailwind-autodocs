@@ -48,6 +48,7 @@ export default defineConfig(async options => {
         // keep this line commented until https://github.com/egoist/tsup/issues/1270 is resolved
         // clean: options.watch ? false : true,
         clean: false,
+        external: ['tailwindcss'],
     };
 
     const configs: Options[] = [];
@@ -93,7 +94,6 @@ export default defineConfig(async options => {
             format: ['cjs'],
             target: NODE_TARGET,
             platform: 'node',
-            external: ['tailwindcss'],
         });
     }
 
