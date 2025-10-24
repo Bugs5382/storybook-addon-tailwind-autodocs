@@ -13,5 +13,5 @@ export abstract class ThemeLoader {
         return filePaths.some(filePath => this.isRegexMatch(filePath));
     }
 
-    public abstract getTailwindTheme(filePath: string): Promise<ResolvedConfig>; // TODO: Update
+    public abstract getTailwindTheme(filePath: string): Promise<ResolvedConfig>;
 }
