@@ -7,12 +7,6 @@ import { ThemeCssParser } from '../parsers/ThemeCssParser';
 
 export class CssLoader extends ThemeLoader {
     public matchingRegex: RegExp = TAILWIND_CSS_REGEX;
-    private themeParser: typeof ThemeCssParser;
-
-    constructor(themeParser = ThemeCssParser) {
-        super();
-        this.themeParser = themeParser;
-    }
 
     public isVersionSupported(version: number): boolean {
         return version >= 4;
@@ -24,13 +18,14 @@ export class CssLoader extends ThemeLoader {
 
     public getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
         const cssContent = readFileSync(filePath, 'utf-8');
-        const { variables } = this.themeParser.parseTheme(cssContent);
+        const { variables } = ThemeCssParser.parseTheme(cssContent);
         const defaultTheme = require('tailwindcss/defaultTheme');
         const baseColors =
             typeof defaultTheme.colors === 'function'
                 ? defaultTheme.colors()
                 : defaultTheme.colors || {};
 
+        console.log(baseColors);
         const mapped = this.mapThemeVariablesToTailwind(
             variables,
             defaultTheme
