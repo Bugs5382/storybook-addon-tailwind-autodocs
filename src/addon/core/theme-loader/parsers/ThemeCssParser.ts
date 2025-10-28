@@ -44,12 +44,15 @@ export class ThemeCssParser {
      * Parse a CSS string for theme variables and options.
      */
     static parseTheme(css: string): ThemeParseResult {
+        // Remove all CSS comments first
+        const cssWithoutComments = css.replace(/\/\*[\s\S]*?\*\//g, '');
+
         const variables: ThemeVariables = {};
         let options: Partial<Record<ThemeOption, boolean>> = {};
         const allVars: Record<string, string> = {};
 
         let match: RegExpExecArray | null;
-        while ((match = this.themeBlockRegex.exec(css))) {
+        while ((match = this.themeBlockRegex.exec(cssWithoutComments))) {
             options = {};
             const option = match[1]?.trim() as ThemeOption | undefined;
             if (option && Object.values(ThemeOption).includes(option)) {

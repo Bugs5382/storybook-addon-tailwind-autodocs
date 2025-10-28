@@ -295,4 +295,25 @@ describe('ThemeCssParser', () => {
         );
         spy.mockRestore();
     });
+
+    it('ignores commented out variables', () => {
+        const css = `
+      @theme {
+        /* --color-primary: #fff; */
+        --color-secondary: #000; /* --color-tertiary: #123456; */
+        /*
+          --font-sans: Arial, sans-serif;
+          --color-quaternary: #abcdef;
+        */
+        --font-serif: Times, serif;
+      }
+    `;
+        const result = ThemeCssParser.parseTheme(css);
+        expect(result.variables.color?.primary).toBeUndefined();
+        expect(result.variables.color.secondary).toBe('#000');
+        expect(result.variables.color?.tertiary).toBeUndefined();
+        expect(result.variables.color?.quaternary).toBeUndefined();
+        expect(result.variables.font?.sans).toBeUndefined();
+        expect(result.variables.font.serif).toEqual(['Times', 'serif']);
+    });
 });
