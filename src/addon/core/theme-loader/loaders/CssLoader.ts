@@ -1,10 +1,18 @@
+// src/addon/core/theme-loader/loaders/CssLoader.ts
 import { ThemeLoader } from './ThemeLoader';
 import { TAILWIND_CSS_REGEX } from '../../../constants';
 import { ResolvedConfig } from '../../../types';
 import { readFileSync } from 'fs';
+import { ThemeCssParser } from '../parsers/ThemeCssParser';
 
 export class CssLoader extends ThemeLoader {
     public matchingRegex: RegExp = TAILWIND_CSS_REGEX;
+    private themeParser: typeof ThemeCssParser;
+
+    constructor(themeParser = ThemeCssParser) {
+        super();
+        this.themeParser = themeParser;
+    }
 
     public isVersionSupported(version: number): boolean {
         return version >= 4;
@@ -14,133 +22,71 @@ export class CssLoader extends ThemeLoader {
         return 'v4+';
     }
 
-    // TODO: Extract parser
     public getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
         const cssContent = readFileSync(filePath, 'utf-8');
-        const customTheme = this.parseThemeFromCSS(cssContent);
-
+        const { variables } = this.themeParser.parseTheme(cssContent);
         const defaultTheme = require('tailwindcss/defaultTheme');
-
-        // Get base colors
         const baseColors =
             typeof defaultTheme.colors === 'function'
                 ? defaultTheme.colors()
                 : defaultTheme.colors || {};
 
+        const mapped = this.mapThemeVariablesToTailwind(
+            variables,
+            defaultTheme
+        );
+
         return Promise.resolve({
             theme: {
-                colors: this.deepMerge(baseColors, customTheme.colors || {}),
+                colors: this.deepMerge(baseColors, mapped.colors),
                 fontSize: this.deepMerge(
                     defaultTheme.fontSize || {},
-                    customTheme.fontSize || {}
+                    mapped.fontSize
                 ),
                 fontFamily: this.deepMerge(
                     defaultTheme.fontFamily || {},
-                    customTheme.fontFamily || {}
+                    mapped.fontFamily
                 ),
-                fontWeight: defaultTheme.fontWeight || {},
-                // TODO: Below is for future
-                // screens: this.deepMerge(
-                //     defaultTheme.screens || {},
-                //     customTheme.screens || {}
-                // ),
-                // spacing: this.deepMerge(
-                //     defaultTheme.spacing || {},
-                //     customTheme.spacing || {}
-                // ),
-                // borderRadius: this.deepMerge(
-                //     defaultTheme.borderRadius || {},
-                //     customTheme.borderRadius || {}
-                // ),
+                fontWeight: this.deepMerge(
+                    defaultTheme.fontWeight || {},
+                    mapped.fontWeight
+                ),
+                // TODO: Breakpoints etc
             },
         });
     }
-    // TODO: Move everything here down into a parser class
-    private parseThemeFromCSS = (cssContent: string) => {
-        const themeRegex = /@theme\s*{([^}]*)}/s;
-        const match = cssContent.match(themeRegex);
 
-        if (!match) {
-            return {};
-        }
-
-        const themeContent = match[1];
-        const colors: Record<string, any> = {};
-        const fontSize: Record<string, any> = {};
-        const fontFamily: Record<string, any> = {};
-        const spacing: Record<string, any> = {};
-        const borderRadius: Record<string, any> = {};
-        const screens: Record<string, any> = {};
-
-        // Parse custom properties line by line
-        const lines = themeContent.split(';').filter(line => line.trim());
-
-        lines.forEach(line => {
-            const match = line.match(/--([^:]+):\s*([^;]+)/);
-            if (!match) return;
-
-            const [, name, value] = match;
-            const trimmedName = name.trim();
-            const trimmedValue = value.trim();
-
-            // Colors
-            if (trimmedName.startsWith('color-')) {
-                const colorName = trimmedName.substring(6); // Remove 'color-'
-                const parts = colorName.split('-');
-
-                if (parts.length > 1 && /^\d+$/.test(parts[parts.length - 1])) {
-                    const shade = parts.pop()!;
-                    const name = parts.join('-');
-                    if (!colors[name]) colors[name] = {};
-                    colors[name][shade] = trimmedValue;
-                } else {
-                    colors[colorName] = trimmedValue;
-                }
-            }
-            // Font sizes
-            else if (trimmedName.startsWith('font-size-')) {
-                const sizeName = trimmedName.substring(10);
-                fontSize[sizeName] = trimmedValue;
-            }
-            // Font families
-            else if (trimmedName.startsWith('font-')) {
-                const familyName = trimmedName.substring(5);
-                if (
-                    !['size', 'weight'].some(prefix =>
-                        familyName.startsWith(prefix)
-                    )
-                ) {
-                    fontFamily[familyName] = trimmedValue
-                        .split(',')
-                        .map(f => f.trim());
-                }
-            }
-            // Spacing
-            else if (trimmedName.startsWith('spacing-')) {
-                const spacingName = trimmedName.substring(8);
-                spacing[spacingName] = trimmedValue;
-            }
-            // Border radius
-            else if (trimmedName.startsWith('radius-')) {
-                const radiusName = trimmedName.substring(7);
-                borderRadius[radiusName] = trimmedValue;
-            }
-            // Breakpoints
-            else if (trimmedName.startsWith('breakpoint-')) {
-                const screenName = trimmedName.substring(11);
-                screens[screenName] = trimmedValue;
-            }
-        });
-
+    private mapThemeVariablesToTailwind(
+        variables: Record<string, Record<string, any>>,
+        defaultTheme: any
+    ) {
         return {
-            colors,
-            fontSize,
-            fontFamily,
-            spacing,
-            borderRadius,
-            screens,
+            colors: this.groupColorVariables(variables['color'] || {}),
+            fontFamily: variables['font'] || {},
+            fontWeight: variables['font-weight'] || {},
+            fontSize: variables['text'] || {},
+            // Add more mappings as needed
         };
-    };
+    }
+
+    // Groups flat color keys into nested objects
+    private groupColorVariables(
+        flatColors: Record<string, string>
+    ): Record<string, any> {
+        const grouped: Record<string, any> = {};
+        for (const key in flatColors) {
+            const match = /^([a-zA-Z0-9\-]+)-(\d{2,3})$/.exec(key);
+            if (match) {
+                const group = match[1];
+                const shade = match[2];
+                if (!grouped[group]) grouped[group] = {};
+                grouped[group][shade] = flatColors[key];
+            } else {
+                grouped[key] = flatColors[key];
+            }
+        }
+        return grouped;
+    }
 
     private deepMerge = (target: any, source: any): any => {
         const output = { ...target };
