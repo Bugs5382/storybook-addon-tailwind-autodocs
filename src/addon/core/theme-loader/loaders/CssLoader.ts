@@ -30,6 +30,7 @@ export class CssLoader extends ThemeLoader {
             variables,
             defaultTheme
         );
+        // TODO: Add ability to detect when 'initial' is used, and ignoring the merging of defaultTheme based on that
 
         return Promise.resolve({
             theme: {

@@ -40,6 +40,8 @@ describe('ConfigLoader', () => {
                     },
                 },
             },
+            // TODO: Ignoring the type error for now until I do SB10 migration work.
+            // @ts-ignore
             plugins: [],
         };
         mockServerRequire.mockResolvedValue(fakeConfig);
