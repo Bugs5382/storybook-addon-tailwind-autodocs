@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ThemeCssParser } from '../../../../core/theme-loader/parsers/ThemeCssParser';
-import { Logger } from '../../../../util';
+import { ThemeCssParser } from '../../../../../core/theme-loader/parsers';
+import { Logger } from '../../../../../util';
 
 describe('ThemeCssParser', () => {
     it('parses a simple @theme block', () => {
@@ -10,9 +10,12 @@ describe('ThemeCssParser', () => {
         --font-sans: Arial, sans-serif;
       }
     `;
-        const result = ThemeCssParser.parseTheme(css);
-        expect(result.variables.color.primary).toBe('#fff');
-        expect(result.variables.font.sans).toEqual(['Arial', 'sans-serif']);
+        const parsedTheme = ThemeCssParser.parseTheme(css);
+        expect(parsedTheme.variables.color.primary).toBe('#fff');
+        expect(parsedTheme.variables.font.sans).toEqual([
+            'Arial',
+            'sans-serif',
+        ]);
     });
 
     it('parses multiple @theme blocks and overrides', () => {
@@ -20,22 +23,8 @@ describe('ThemeCssParser', () => {
       @theme { --color-primary: #fff; }
       @theme { --color-primary: #000; }
     `;
-        const result = ThemeCssParser.parseTheme(css);
-        expect(result.variables.color.primary).toBe('#000');
-    });
-
-    it('handles @theme inline and static options', () => {
-        const css = `
-      @theme inline {
-        --font-inter: 'Inter, sans-serif';
-      }
-      @theme static {
-        --color-accent: #123456;
-      }
-    `;
-        const result = ThemeCssParser.parseTheme(css);
-        expect(result.options.inline).toBeUndefined();
-        expect(result.options.static).toBe(true);
+        const parsedTheme = ThemeCssParser.parseTheme(css);
+        expect(parsedTheme.variables.color.primary).toBe('#000');
     });
 
     it('resolves referenced variables when using @theme inline', () => {
@@ -45,10 +34,16 @@ describe('ThemeCssParser', () => {
         --font-sans: var(--font-inter);
       }
     `;
-        const result = ThemeCssParser.parseTheme(css);
+        const parsedTheme = ThemeCssParser.parseTheme(css);
         // font-sans should resolve to the value of font-inter, not just 'var(--font-inter)'
-        expect(result.variables.font.inter).toEqual(['Inter', 'sans-serif']);
-        expect(result.variables.font.sans).toEqual(['Inter', 'sans-serif']);
+        expect(parsedTheme.variables.font.inter).toEqual([
+            'Inter',
+            'sans-serif',
+        ]);
+        expect(parsedTheme.variables.font.sans).toEqual([
+            'Inter',
+            'sans-serif',
+        ]);
     });
 
     it('handles namespace resets', () => {
@@ -58,9 +53,9 @@ describe('ThemeCssParser', () => {
         --color-blue: #00f;
       }
     `;
-        const result = ThemeCssParser.parseTheme(css);
-        expect(result.variables.color['*']).toBe('initial');
-        expect(result.variables.color.blue).toBe('#00f');
+        const parsedTheme = ThemeCssParser.parseTheme(css);
+        expect(parsedTheme.variables.color['*']).toBe('initial');
+        expect(parsedTheme.variables.color.blue).toBe('#00f');
     });
 
     it('still parses nested @theme blocks', () => {
@@ -69,8 +64,8 @@ describe('ThemeCssParser', () => {
         @theme { --color-primary: #fff; }
       }
     `;
-        const result = ThemeCssParser.parseTheme(css);
-        expect(result.variables.color.primary).toBe('#fff');
+        const parsedTheme = ThemeCssParser.parseTheme(css);
+        expect(parsedTheme.variables.color.primary).toBe('#fff');
     });
 
     it('is robust to malformed @theme blocks', () => {
@@ -80,9 +75,12 @@ describe('ThemeCssParser', () => {
         --font-sans: Arial, sans-serif;
       }
     `;
-        const result = ThemeCssParser.parseTheme(css);
-        expect(result.variables.color?.primary).toBeUndefined();
-        expect(result.variables.font.sans).toEqual(['Arial', 'sans-serif']);
+        const parsedTheme = ThemeCssParser.parseTheme(css);
+        expect(parsedTheme.variables.color?.primary).toBeUndefined();
+        expect(parsedTheme.variables.font.sans).toEqual([
+            'Arial',
+            'sans-serif',
+        ]);
     });
 
     it('parses a full @theme block with all major fields', () => {
@@ -112,10 +110,10 @@ describe('ThemeCssParser', () => {
         --aspect-video: 16 / 9;
       }
     `;
-        const result = ThemeCssParser.parseTheme(css);
+        const parsedTheme = ThemeCssParser.parseTheme(css);
 
         // Font families
-        expect(result.variables.font.sans).toEqual([
+        expect(parsedTheme.variables.font.sans).toEqual([
             'ui-sans-serif',
             'system-ui',
             'sans-serif',
@@ -124,7 +122,7 @@ describe('ThemeCssParser', () => {
             'Segoe UI Symbol',
             'Noto Color Emoji',
         ]);
-        expect(result.variables.font.serif).toEqual([
+        expect(parsedTheme.variables.font.serif).toEqual([
             'ui-serif',
             'Georgia',
             'Cambria',
@@ -132,7 +130,7 @@ describe('ThemeCssParser', () => {
             'Times',
             'serif',
         ]);
-        expect(result.variables.font.mono).toEqual([
+        expect(parsedTheme.variables.font.mono).toEqual([
             'ui-monospace',
             'SFMono-Regular',
             'Menlo',
@@ -144,51 +142,53 @@ describe('ThemeCssParser', () => {
         ]);
 
         // Colors
-        expect(result.variables.color['red-50']).toBe(
+        expect(parsedTheme.variables.color['red-50']).toBe(
             'oklch(97.1% 0.013 17.38)'
         );
-        expect(result.variables.color['orange-100']).toBe(
+        expect(parsedTheme.variables.color['orange-100']).toBe(
             'oklch(95.4% 0.038 75.164)'
         );
-        expect(result.variables.color['emerald-500']).toBe(
+        expect(parsedTheme.variables.color['emerald-500']).toBe(
             'oklch(69.6% 0.17 162.48)'
         );
-        expect(result.variables.color.black).toBe('#000');
-        expect(result.variables.color.white).toBe('#fff');
+        expect(parsedTheme.variables.color.black).toBe('#000');
+        expect(parsedTheme.variables.color.white).toBe('#fff');
 
         // Breakpoints
-        expect(result.variables.breakpoint.sm).toBe('40rem');
-        expect(result.variables.breakpoint.xl).toBe('80rem');
+        expect(parsedTheme.variables.breakpoint.sm).toBe('40rem');
+        expect(parsedTheme.variables.breakpoint.xl).toBe('80rem');
 
         // Containers
-        expect(result.variables.container.xs).toBe('20rem');
-        expect(result.variables.container['2xl']).toBe('42rem');
+        expect(parsedTheme.variables.container.xs).toBe('20rem');
+        expect(parsedTheme.variables.container['2xl']).toBe('42rem');
 
         // Text sizes and line heights
-        expect(result.variables.text.xs).toBe('0.75rem');
-        expect(result.variables.text['xs--line-height']).toBe('calc(1 / 0.75)');
-        expect(result.variables.text['4xl']).toBe('2.25rem');
+        expect(parsedTheme.variables.text.xs).toBe('0.75rem');
+        expect(parsedTheme.variables.text['xs--line-height']).toBe(
+            'calc(1 / 0.75)'
+        );
+        expect(parsedTheme.variables.text['4xl']).toBe('2.25rem');
 
         // Font weights
-        expect(result.variables['font-weight'].bold).toBe('700');
-        expect(result.variables['font-weight'].normal).toBe('400');
+        expect(parsedTheme.variables['font-weight'].bold).toBe('700');
+        expect(parsedTheme.variables['font-weight'].normal).toBe('400');
 
         // Radius
-        expect(result.variables.radius.lg).toBe('0.5rem');
+        expect(parsedTheme.variables.radius.lg).toBe('0.5rem');
 
         // Shadows
-        expect(result.variables.shadow.md).toBe(
+        expect(parsedTheme.variables.shadow.md).toBe(
             '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
         );
 
         // Blur
-        expect(result.variables.blur.xl).toBe('24px');
+        expect(parsedTheme.variables.blur.xl).toBe('24px');
 
         // Perspective
-        expect(result.variables.perspective.distant).toBe('1200px');
+        expect(parsedTheme.variables.perspective.distant).toBe('1200px');
 
         // Aspect
-        expect(result.variables.aspect.video).toBe('16 / 9');
+        expect(parsedTheme.variables.aspect.video).toBe('16 / 9');
     });
 
     // src/addon/tests/core/theme-loader/parser/ThemeCssParser.test.ts
@@ -217,38 +217,38 @@ describe('ThemeCssParser', () => {
         --font-fancy: 'Caveat', cursive, var(--font-base);
       }
     `;
-        const result = ThemeCssParser.parseTheme(css);
+        const parsedTheme = ThemeCssParser.parseTheme(css);
 
         // Font families
-        expect(result.variables.font.base).toEqual([
+        expect(parsedTheme.variables.font.base).toEqual([
             'Roboto',
             'Open Sans',
             'Arial',
             'sans-serif',
         ]);
-        expect(result.variables.font.sans).toEqual([
+        expect(parsedTheme.variables.font.sans).toEqual([
             'Roboto',
             'Open Sans',
             'Arial',
             'sans-serif',
         ]);
-        expect(result.variables.font.serif).toEqual([
+        expect(parsedTheme.variables.font.serif).toEqual([
             'Times New Roman',
             'Times',
             'serif',
         ]);
-        expect(result.variables.font.mono).toEqual([
+        expect(parsedTheme.variables.font.mono).toEqual([
             'Times New Roman',
             'Times',
             'serif',
         ]);
-        expect(result.variables.font.custom).toEqual([
+        expect(parsedTheme.variables.font.custom).toEqual([
             'Roboto',
             'Open Sans',
             'Arial',
             'sans-serif',
         ]);
-        expect(result.variables.font.fancy).toEqual([
+        expect(parsedTheme.variables.font.fancy).toEqual([
             'Caveat',
             'cursive',
             'Roboto',
@@ -258,28 +258,28 @@ describe('ThemeCssParser', () => {
         ]);
 
         // Colors
-        expect(result.variables.color.primary).toBe('#123456');
-        expect(result.variables.color.secondary).toBe('#123456');
-        expect(result.variables.color.accent).toBe('#abcdef');
-        expect(result.variables.color['*']).toBe('initial');
+        expect(parsedTheme.variables.color.primary).toBe('#123456');
+        expect(parsedTheme.variables.color.secondary).toBe('#123456');
+        expect(parsedTheme.variables.color.accent).toBe('#abcdef');
+        expect(parsedTheme.variables.color['*']).toBe('initial');
 
         // Font weights
-        expect(result.variables['font-weight'].bold).toBe('700');
-        expect(result.variables['font-weight'].normal).toBe('400');
-        expect(result.variables['font-weight'].light).toBe('400');
+        expect(parsedTheme.variables['font-weight'].bold).toBe('700');
+        expect(parsedTheme.variables['font-weight'].normal).toBe('400');
+        expect(parsedTheme.variables['font-weight'].light).toBe('400');
 
         // Text
-        expect(result.variables.text.lg).toBe('1.125rem');
-        expect(result.variables.text['lg--line-height']).toBe('calc(1.5)');
+        expect(parsedTheme.variables.text.lg).toBe('1.125rem');
+        expect(parsedTheme.variables.text['lg--line-height']).toBe('calc(1.5)');
 
         // Shadow, radius, breakpoint, container, aspect
-        expect(result.variables.shadow.xl).toBe(
+        expect(parsedTheme.variables.shadow.xl).toBe(
             '0 20px 25px -5px rgba(0,0,0,0.1)'
         );
-        expect(result.variables.radius.full).toBe('9999px');
-        expect(result.variables.breakpoint.md).toBe('48rem');
-        expect(result.variables.container.lg).toBe('64rem');
-        expect(result.variables.aspect.square).toBe('1 / 1');
+        expect(parsedTheme.variables.radius.full).toBe('9999px');
+        expect(parsedTheme.variables.breakpoint.md).toBe('48rem');
+        expect(parsedTheme.variables.container.lg).toBe('64rem');
+        expect(parsedTheme.variables.aspect.square).toBe('1 / 1');
     });
 
     it('logs error when max recursion depth is reached for font variable', () => {
@@ -308,12 +308,12 @@ describe('ThemeCssParser', () => {
         --font-serif: Times, serif;
       }
     `;
-        const result = ThemeCssParser.parseTheme(css);
-        expect(result.variables.color?.primary).toBeUndefined();
-        expect(result.variables.color.secondary).toBe('#000');
-        expect(result.variables.color?.tertiary).toBeUndefined();
-        expect(result.variables.color?.quaternary).toBeUndefined();
-        expect(result.variables.font?.sans).toBeUndefined();
-        expect(result.variables.font.serif).toEqual(['Times', 'serif']);
+        const parsedTheme = ThemeCssParser.parseTheme(css);
+        expect(parsedTheme.variables.color?.primary).toBeUndefined();
+        expect(parsedTheme.variables.color.secondary).toBe('#000');
+        expect(parsedTheme.variables.color?.tertiary).toBeUndefined();
+        expect(parsedTheme.variables.color?.quaternary).toBeUndefined();
+        expect(parsedTheme.variables.font?.sans).toBeUndefined();
+        expect(parsedTheme.variables.font.serif).toEqual(['Times', 'serif']);
     });
 });

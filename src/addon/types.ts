@@ -27,6 +27,11 @@ export interface Typography {
     size: Record<string, string>;
 }
 
+export type ThemeCssVariables = Record<
+    string,
+    Record<string, string | string[]>
+>;
+
 export type SupportedFontUnit =
     | 'rem'
     | 'em'

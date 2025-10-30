@@ -1,15 +1,10 @@
 import { Logger } from '../../../util';
+import { ThemeCssVariables } from '../../../types';
+import { ParsedTheme } from './ParsedTheme';
 
-export enum ThemeOption {
+enum ThemeOption {
     Inline = 'inline',
     Static = 'static',
-}
-
-export type ThemeVariables = Record<string, Record<string, string | string[]>>;
-
-export interface ThemeParseResult {
-    variables: ThemeVariables;
-    options: Partial<Record<ThemeOption, boolean>>;
 }
 
 /**
@@ -43,11 +38,11 @@ export class ThemeCssParser {
     /**
      * Parse a CSS string for theme variables and options.
      */
-    static parseTheme(css: string): ThemeParseResult {
+    static parseTheme(css: string): ParsedTheme {
         // Remove all CSS comments first
         const cssWithoutComments = css.replace(/\/\*[\s\S]*?\*\//g, '');
 
-        const variables: ThemeVariables = {};
+        const variables: ThemeCssVariables = {};
         let options: Partial<Record<ThemeOption, boolean>> = {};
         const allVars: Record<string, string> = {};
 
@@ -68,7 +63,7 @@ export class ThemeCssParser {
             this.cleanFontVariables(variables);
         }
 
-        return { variables, options };
+        return new ParsedTheme(variables);
     }
 
     /**
@@ -76,7 +71,7 @@ export class ThemeCssParser {
      */
     private static parseVariables(
         block: string,
-        variables: ThemeVariables,
+        variables: ThemeCssVariables,
         allVars: Record<string, string>
     ): void {
         let varMatch: RegExpExecArray | null;
@@ -109,11 +104,21 @@ export class ThemeCssParser {
     /**
      * Clean font variables by splitting and stripping quotes.
      */
-    private static cleanFontVariables(variables: ThemeVariables): void {
+    private static cleanFontVariables(variables: ThemeCssVariables): void {
         if (variables.font) {
             for (const key in variables.font) {
                 const val = variables.font[key];
-                variables.font[key] = this.cleanFontArray(val as string);
+
+                // If we're ignoring the font namespace, leave as is
+                if (
+                    key === '*' &&
+                    typeof val === 'string' &&
+                    val === 'initial'
+                ) {
+                    variables.font[key] = 'initial';
+                } else {
+                    variables.font[key] = this.cleanFontArray(val as string);
+                }
             }
         }
     }
@@ -157,7 +162,7 @@ export class ThemeCssParser {
      * Resolve inline references and clean font variables (with recursion).
      */
     private static resolveInlineReferences(
-        variables: ThemeVariables,
+        variables: ThemeCssVariables,
         allVars: Record<string, string>
     ): void {
         for (const ns in variables) {

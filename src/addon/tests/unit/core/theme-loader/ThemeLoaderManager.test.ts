@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ThemeLoaderManager } from '../../../core/theme-loader';
-import { ConfigLoader, CssLoader } from '../../../core/theme-loader/loaders';
-import { TailwindPackageVersionDetector } from '../../../core/package-detection';
-import { Logger } from '../../../util';
+import { ThemeLoaderManager } from '../../../../core/theme-loader';
+import { ConfigLoader, CssLoader } from '../../../../core/theme-loader/loaders';
+import { TailwindPackageVersionDetector } from '../../../../core/package-detection';
+import { Logger } from '../../../../util';
 
 // Mock external dependencies before imports
 vi.mock('fs');
 vi.mock('storybook/internal/common');
-vi.mock('../../../util');
+vi.mock('../../../../util');
 
 describe('ThemeLoaderManager', () => {
     let mockDetector: TailwindPackageVersionDetector;

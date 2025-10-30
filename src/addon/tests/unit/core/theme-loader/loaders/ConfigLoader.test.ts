@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ConfigLoader } from '../../../../core/theme-loader/loaders';
-import { mockRequireModule, restoreRequireModule } from './mockRequireModule';
+import { ConfigLoader } from '../../../../../core/theme-loader/loaders';
+import {
+    mockRequireModule,
+    restoreRequireModule,
+} from '../../mockRequireModule';
 import { serverRequire } from 'storybook/internal/common';
 
 vi.mock('storybook/internal/common', () => ({
@@ -9,7 +12,6 @@ vi.mock('storybook/internal/common', () => ({
 
 const mockServerRequire = vi.mocked(serverRequire);
 
-// TODO: Consider how valuable this test is
 describe('ConfigLoader', () => {
     beforeEach(() => {
         vi.clearAllMocks();

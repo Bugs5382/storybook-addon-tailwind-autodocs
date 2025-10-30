@@ -1,7 +1,12 @@
+// src/addon/tests/core/theme-loader/loaders/CssLoader.test.ts
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { readFileSync } from 'fs';
-import { CssLoader } from '../../../../core/theme-loader/loaders';
-import { mockRequireModule, restoreRequireModule } from './mockRequireModule';
+import { CssLoader } from '../../../../../core/theme-loader/loaders';
+import {
+    mockRequireModule,
+    restoreRequireModule,
+} from '../../mockRequireModule';
+import { ParsedTheme } from '../../../../../core/theme-loader/parsers';
 
 vi.mock('fs', () => ({
     readFileSync: vi.fn(),
@@ -36,7 +41,28 @@ describe('CssLoader', () => {
         `;
         mockReadFileSync.mockReturnValue(css);
 
-        const loader = new CssLoader();
+        // Mock ThemeCssParser
+        const mockParser = {
+            parseTheme: vi.fn().mockReturnValue(
+                new ParsedTheme({
+                    color: {
+                        'primary-100': '#f00',
+                        'primary-200': '#c00',
+                    },
+                    font: {
+                        sans: ['Arial', 'sans-serif'],
+                    },
+                    'font-weight': {
+                        bold: '700',
+                    },
+                    text: {
+                        lg: '1.125rem',
+                    },
+                })
+            ),
+        };
+
+        const loader = new CssLoader(mockParser as any);
         const result = await loader.getTailwindTheme('fake/path/theme.css');
         expect(result.theme.colors.primary['100']).toBe('#f00');
         expect(result.theme.colors.primary['200']).toBe('#c00');

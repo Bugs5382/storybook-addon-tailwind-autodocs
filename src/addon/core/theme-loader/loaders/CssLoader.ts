@@ -1,12 +1,18 @@
 // src/addon/core/theme-loader/loaders/CssLoader.ts
 import { ThemeLoader } from './ThemeLoader';
 import { TAILWIND_CSS_REGEX } from '../../../constants';
-import { ResolvedConfig } from '../../../types';
+import { ResolvedConfig, ThemeCssVariables } from '../../../types';
 import { readFileSync } from 'fs';
-import { ThemeCssParser } from '../parsers/ThemeCssParser';
+import { ThemeCssParser } from '../parsers';
 
 export class CssLoader extends ThemeLoader {
     public matchingRegex: RegExp = TAILWIND_CSS_REGEX;
+    private parser: typeof ThemeCssParser;
+
+    constructor(parser: typeof ThemeCssParser = ThemeCssParser) {
+        super();
+        this.parser = parser;
+    }
 
     public isVersionSupported(version: number): boolean {
         return version >= 4;
@@ -18,56 +24,77 @@ export class CssLoader extends ThemeLoader {
 
     public getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
         const cssContent = readFileSync(filePath, 'utf-8');
-        const { variables } = ThemeCssParser.parseTheme(cssContent);
+        const parsedTheme = this.parser.parseTheme(cssContent);
         const defaultTheme = require('tailwindcss/defaultTheme');
         const baseColors =
             typeof defaultTheme.colors === 'function'
                 ? defaultTheme.colors()
                 : defaultTheme.colors || {};
 
-        console.log(baseColors);
-        const mapped = this.mapThemeVariablesToTailwind(
-            variables,
-            defaultTheme
-        );
-        // TODO: Add ability to detect when 'initial' is used, and ignoring the merging of defaultTheme based on that
+        const mapped = this.mapThemeVariablesToTailwind(parsedTheme.variables);
 
-        return Promise.resolve({
-            theme: {
-                colors: this.deepMerge(baseColors, mapped.colors),
-                fontSize: this.deepMerge(
-                    defaultTheme.fontSize || {},
-                    mapped.fontSize
-                ),
-                fontFamily: this.deepMerge(
-                    defaultTheme.fontFamily || {},
-                    mapped.fontFamily
-                ),
-                fontWeight: this.deepMerge(
-                    defaultTheme.fontWeight || {},
-                    mapped.fontWeight
-                ),
-                // TODO: Breakpoints etc
-            },
-        });
+        // If global overriden, ignore all defaults; just use mapped values
+        if (parsedTheme.isDefaultOverridden()) {
+            return Promise.resolve({
+                theme: {
+                    colors: mapped.colors,
+                    fontFamily: mapped.fontFamily,
+                    fontWeight: mapped.fontWeight,
+                    fontSize: mapped.fontSize,
+                },
+            });
+        } else {
+            return Promise.resolve({
+                theme: {
+                    colors: parsedTheme.isDefaultOverridden('color')
+                        ? mapped.colors
+                        : this.deepMerge(baseColors, mapped.colors),
+                    fontFamily: parsedTheme.isDefaultOverridden('font')
+                        ? mapped.fontFamily
+                        : this.deepMerge(
+                              defaultTheme.fontFamily || {},
+                              mapped.fontFamily
+                          ),
+                    fontWeight: parsedTheme.isDefaultOverridden('font-weight')
+                        ? mapped.fontWeight
+                        : this.deepMerge(
+                              defaultTheme.fontWeight || {},
+                              mapped.fontWeight
+                          ),
+                    fontSize: parsedTheme.isDefaultOverridden('text')
+                        ? mapped.fontSize
+                        : this.deepMerge(
+                              defaultTheme.fontSize || {},
+                              mapped.fontSize
+                          ),
+                },
+            });
+        }
     }
 
-    private mapThemeVariablesToTailwind(
-        variables: Record<string, Record<string, any>>,
-        defaultTheme: any
-    ) {
+    private mapThemeVariablesToTailwind(variables: ThemeCssVariables) {
         return {
-            colors: this.groupColorVariables(variables['color'] || {}),
-            fontFamily: variables['font'] || {},
-            fontWeight: variables['font-weight'] || {},
-            fontSize: variables['text'] || {},
+            colors: this.groupColorVariables(
+                this.filterResetKeys(variables['color'] || {})
+            ),
+            fontFamily: this.filterResetKeys(variables['font'] || {}),
+            fontWeight: this.filterResetKeys(variables['font-weight'] || {}),
+            fontSize: this.filterResetKeys(variables['text'] || {}),
             // Add more mappings as needed
         };
     }
 
+    private filterResetKeys(obj: Record<string, any>): Record<string, any> {
+        const filtered: Record<string, any> = {};
+        for (const key in obj) {
+            if (key !== '*') filtered[key] = obj[key];
+        }
+        return filtered;
+    }
+
     // Groups flat color keys into nested objects
     private groupColorVariables(
-        flatColors: Record<string, string>
+        flatColors: Record<string, string | string[]>
     ): Record<string, any> {
         const grouped: Record<string, any> = {};
         for (const key in flatColors) {
