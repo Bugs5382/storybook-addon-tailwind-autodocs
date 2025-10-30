@@ -3,10 +3,10 @@
 const preset = require('./dist/preset.cjs');
 
 const managerEntries = (entry = []) => {
-    return [...entry, require.resolve("./dist/manager.js")];
+    return [...entry, require.resolve('./dist/manager.js')];
 };
 
 module.exports = {
     ...preset,
-    managerEntries
+    managerEntries,
 };

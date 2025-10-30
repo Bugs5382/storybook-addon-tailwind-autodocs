@@ -10,15 +10,15 @@ export const indexInputs = async (
             type: 'docs',
             importPath: fileName,
             exportName: 'Colors',
-            title: options.makeTitle('Theme'),
+            title: options.makeTitle('Tailwind Theme/Colors'),
             tags: ['!autodocs', 'tailwind'],
         },
         {
             // Typography
             type: 'docs',
             importPath: fileName,
-            exportName: 'Typography', // TODO: Fix this, currently just for testing
-            title: options.makeTitle('Theme'), // TODO: Fix this, currently just for testing
+            exportName: 'Typography',
+            title: options.makeTitle('Tailwind Theme/Typography'),
             tags: ['!autodocs', 'tailwind'],
         },
     ];
