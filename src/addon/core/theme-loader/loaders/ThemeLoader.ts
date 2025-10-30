@@ -14,4 +14,6 @@ export abstract class ThemeLoader {
     }
 
     public abstract getTailwindTheme(filePath: string): Promise<ResolvedConfig>;
+
+    public abstract resolveId(filePath: string): string | null;
 }

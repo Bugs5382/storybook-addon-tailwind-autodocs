@@ -1,5 +1,5 @@
 import { ThemeLoader } from './ThemeLoader';
-import { TAILWIND_CONFIG_REGEX } from '../../../constants';
+import { TAILWIND_CONFIG_REGEX, VIRTUAL_FILE_PREFIX } from '../../../constants';
 import { ResolvedConfig } from '../../../types';
 import { serverRequire } from 'storybook/internal/common';
 
@@ -12,6 +12,13 @@ export class ConfigLoader extends ThemeLoader {
 
     public supportedVersionLabel(): string {
         return 'v3';
+    }
+
+    public resolveId(filePath: string): string | null {
+        if (this.isRegexMatch(filePath)) {
+            return VIRTUAL_FILE_PREFIX + filePath + '.js'; // TODO: Why doesn't this work if its not jsx?
+        }
+        return null;
     }
 
     public async getTailwindTheme(filePath: string): Promise<ResolvedConfig> {

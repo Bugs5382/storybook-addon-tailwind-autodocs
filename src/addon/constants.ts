@@ -4,3 +4,4 @@ export const TAILWIND_CSS_REGEX = /\.css$/;
 export const VIRTUAL_FILE_PREFIX = '\0tailwind-autodocs:';
 
 export const MIN_SUPPORTED_TAILWIND_VERSION = 3;
+export const TAILWIND_IMPORT_REGEX = /@import\s+['"]tailwindcss['"]/;

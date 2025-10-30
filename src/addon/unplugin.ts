@@ -1,7 +1,8 @@
 import { createUnplugin } from 'unplugin';
-import { VIRTUAL_FILE_PREFIX } from './constants';
+import { TAILWIND_IMPORT_REGEX, VIRTUAL_FILE_PREFIX } from './constants';
 import { AddonOptions } from './types';
 import { ThemeTransformer } from './core/theme-transformer/ThemeTransformer';
+import { readFileSync } from 'fs';
 
 const unplugin = createUnplugin((options: AddonOptions) => {
     const themeLoader = options.themeLoader;
@@ -11,10 +12,7 @@ const unplugin = createUnplugin((options: AddonOptions) => {
         name: 'unplugin-tailwind-autodocs',
         enforce: 'pre',
         resolveId(id) {
-            if (themeLoader.isRegexMatch(id)) {
-                return VIRTUAL_FILE_PREFIX + id + '.js'; // TODO: Why doesn't this work if its not jsx?
-            }
-            return null;
+            return themeLoader.resolveId(id);
         },
         loadInclude(id) {
             return id.startsWith(VIRTUAL_FILE_PREFIX);

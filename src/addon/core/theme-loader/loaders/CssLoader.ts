@@ -1,6 +1,10 @@
 // src/addon/core/theme-loader/loaders/CssLoader.ts
 import { ThemeLoader } from './ThemeLoader';
-import { TAILWIND_CSS_REGEX } from '../../../constants';
+import {
+    TAILWIND_CSS_REGEX,
+    TAILWIND_IMPORT_REGEX,
+    VIRTUAL_FILE_PREFIX,
+} from '../../../constants';
 import { ResolvedConfig, ThemeCssVariables } from '../../../types';
 import { readFileSync } from 'fs';
 import { ThemeCssParser } from '../parsers';
@@ -20,6 +24,17 @@ export class CssLoader extends ThemeLoader {
 
     public supportedVersionLabel(): string {
         return 'v4+';
+    }
+
+    public resolveId(filePath: string): string | null {
+        if (!this.isRegexMatch(filePath)) return null;
+        try {
+            const content = readFileSync(filePath, 'utf-8');
+            if (!TAILWIND_IMPORT_REGEX.test(content)) return null;
+            return VIRTUAL_FILE_PREFIX + filePath + '.js'; // TODO: Why doesn't this work if its not jsx?
+        } catch {
+            return null;
+        }
     }
 
     public getTailwindTheme(filePath: string): Promise<ResolvedConfig> {
