@@ -174,14 +174,13 @@ describe('CssLoader', () => {
         it('returns virtual file path if @import tailwindcss is present', () => {
             mockReadFileSync.mockReturnValue('@import "tailwindcss";');
             const loader = new CssLoader();
-            const result = loader.resolveId('styles.css');
-            expect(result).toBe(VIRTUAL_FILE_PREFIX + 'styles.css.js');
+            const result = loader.baseResolveId('styles.css');
+            expect(result).toBe(VIRTUAL_FILE_PREFIX + 'styles.css');
         });
         it('returns null if @import tailwindcss is not present', () => {
             mockReadFileSync.mockReturnValue('body { color: red; }');
             const loader = new CssLoader();
-            const result = loader.resolveId('styles.css');
-            console.log(result);
+            const result = loader.baseResolveId('styles.css');
             expect(result).toBeNull();
         });
     });

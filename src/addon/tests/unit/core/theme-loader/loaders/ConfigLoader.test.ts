@@ -114,13 +114,13 @@ describe('ConfigLoader', () => {
         });
         it('returns virtual file path for matching config', () => {
             const loader = new ConfigLoader();
-            const result = loader.resolveId('tailwind.config.js');
-            expect(result).toBe(VIRTUAL_FILE_PREFIX + 'tailwind.config.js.js');
+            const result = loader.baseResolveId('tailwind.config.js');
+            expect(result).toBe(VIRTUAL_FILE_PREFIX + 'tailwind.config.js');
         });
 
         it('returns null for non-matching file', () => {
             const loader = new ConfigLoader();
-            const result = loader.resolveId('not-tailwind.js');
+            const result = loader.baseResolveId('not-tailwind.js');
             expect(result).toBeNull();
         });
     });

@@ -14,9 +14,9 @@ export class ConfigLoader extends ThemeLoader {
         return 'v3';
     }
 
-    public resolveId(filePath: string): string | null {
+    public baseResolveId(filePath: string): string | null {
         if (this.isRegexMatch(filePath)) {
-            return VIRTUAL_FILE_PREFIX + filePath + '.js'; // TODO: Why doesn't this work if its not jsx?
+            return VIRTUAL_FILE_PREFIX + filePath; // TODO: Why doesn't this work if its not jsx?
         }
         return null;
     }

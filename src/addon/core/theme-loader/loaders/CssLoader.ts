@@ -26,12 +26,12 @@ export class CssLoader extends ThemeLoader {
         return 'v4+';
     }
 
-    public resolveId(filePath: string): string | null {
+    public baseResolveId(filePath: string): string | null {
         if (!this.isRegexMatch(filePath)) return null;
         try {
             const content = readFileSync(filePath, 'utf-8');
             if (!TAILWIND_IMPORT_REGEX.test(content)) return null;
-            return VIRTUAL_FILE_PREFIX + filePath + '.js'; // TODO: Why doesn't this work if its not jsx?
+            return VIRTUAL_FILE_PREFIX + filePath; // TODO: Why doesn't this work if its not jsx?
         } catch {
             return null;
         }

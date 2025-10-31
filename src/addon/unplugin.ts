@@ -1,8 +1,7 @@
 import { createUnplugin } from 'unplugin';
-import { TAILWIND_IMPORT_REGEX, VIRTUAL_FILE_PREFIX } from './constants';
+import { VIRTUAL_FILE_PREFIX } from './constants';
 import { AddonOptions } from './types';
 import { ThemeTransformer } from './core/theme-transformer/ThemeTransformer';
-import { readFileSync } from 'fs';
 
 const unplugin = createUnplugin((options: AddonOptions) => {
     const themeLoader = options.themeLoader;
@@ -12,15 +11,16 @@ const unplugin = createUnplugin((options: AddonOptions) => {
         name: 'unplugin-tailwind-autodocs',
         enforce: 'pre',
         resolveId(id) {
-            return themeLoader.resolveId(id);
+            const baseResolveId = themeLoader.baseResolveId(id);
+            if (baseResolveId === null) return null;
+            return baseResolveId + '.js';
         },
         loadInclude(id) {
             return id.startsWith(VIRTUAL_FILE_PREFIX);
         },
         async load(id) {
             if (id.startsWith(VIRTUAL_FILE_PREFIX)) {
-                // Remove the .js extension we added
-                // FIXME: Something more robust that -3 to remove.js and virtual_prefix
+                // Remove the .js extension we added in resolveId method
                 const realPath = id.slice(VIRTUAL_FILE_PREFIX.length, -3);
 
                 // Watch the config file for all bundlers - mainly for webpack
@@ -50,4 +50,4 @@ const unplugin = createUnplugin((options: AddonOptions) => {
     };
 });
 
-export const { vite, webpack } = unplugin;
+export const { vite } = unplugin;
