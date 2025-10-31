@@ -75,7 +75,7 @@ export class ThemeLoaderManager {
         }
 
         if (matchingLoaders.length > 1) {
-            Logger.warn(
+            Logger.error(
                 'Multiple tailwind configuration files specified. ' +
                     `It looks like you have v${installedTailwindMajorVersion}.x installed. Please specify one ` +
                     'configuration approach (a single CSS or tailwind.config file). For clarity, only specify one configuration approach.'

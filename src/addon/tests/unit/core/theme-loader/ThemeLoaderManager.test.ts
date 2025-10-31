@@ -75,7 +75,7 @@ describe('ThemeLoaderManager', () => {
             );
 
             expect(manager.getLoader()).toBeNull();
-            expect(Logger.warn).toHaveBeenCalledWith(
+            expect(Logger.error).toHaveBeenCalledWith(
                 expect.stringContaining('Multiple tailwind configuration files')
             );
         });
