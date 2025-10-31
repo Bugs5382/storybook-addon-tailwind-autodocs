@@ -69,6 +69,8 @@ export class ThemeCssParser {
     /**
      * Parse variable definitions from a theme block.
      */
+    // Replace the parseVariables method in src/addon/core/theme-loader/parsers/ThemeCssParser.ts
+
     private static parseVariables(
         block: string,
         variables: ThemeCssVariables,
@@ -79,6 +81,29 @@ export class ThemeCssParser {
             const rawName = varMatch[1].trim();
             const value = varMatch[2].trim();
             const { namespace, key } = this.extractNamespaceAndKey(rawName);
+
+            // Handle global reset
+            if (rawName === '*') {
+                for (const ns in variables) delete variables[ns];
+                for (const k in allVars) delete allVars[k];
+                variables['*'] = { '*': value };
+                allVars['*'] = value;
+                continue;
+            }
+
+            // Handle namespace reset
+            if (key === '*') {
+                if (variables[namespace]) delete variables[namespace];
+                Object.keys(allVars).forEach(k => {
+                    if (k === rawName || k.startsWith(namespace + '-'))
+                        delete allVars[k];
+                });
+                if (!variables[namespace]) variables[namespace] = {};
+                variables[namespace]['*'] = value;
+                allVars[rawName] = value;
+                continue;
+            }
+
             if (!variables[namespace]) variables[namespace] = {};
             variables[namespace][key] = value;
             allVars[rawName] = value;
@@ -169,9 +194,13 @@ export class ThemeCssParser {
             for (const key in variables[ns]) {
                 let val = variables[ns][key] as string;
                 if (ns === 'font') {
-                    // Recursively resolve all var(--...) in font values
+                    // Recursively resolve all var(--...) in font values, ignoring 'initial'
                     val = this.resolveFontValue(val, allVars);
-                    variables[ns][key] = this.cleanFontArray(val);
+                    if (key === '*' && val === 'initial') {
+                        variables[ns][key] = 'initial';
+                    } else {
+                        variables[ns][key] = this.cleanFontArray(val);
+                    }
                 } else {
                     // For other namespaces, resolve one level of var(--...) if present
                     const refMatch = /^var\(--([a-zA-Z0-9\-]+)\)$/.exec(val);
