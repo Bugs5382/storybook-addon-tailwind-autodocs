@@ -1,12 +1,26 @@
 import { ThemeLoader } from './core/theme-loader';
+import { VALID_SECTIONS } from './constants';
 
 export interface PackageJson {
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
 }
 
-export interface AddonOptions {
+export interface PluginOptions {
     themeLoader: ThemeLoader;
+}
+
+export type SectionInput =
+    | ValidSections
+    | {
+          name: ValidSections;
+          path?: string;
+      };
+export type ValidSections = (typeof VALID_SECTIONS)[number];
+
+export interface Section {
+    name: ValidSections;
+    path: string;
 }
 
 export interface ResolvedConfig {

@@ -7,15 +7,22 @@ import { vite } from './unplugin';
 import { configIndexer } from './indexers';
 import { cssIndexer } from './indexers';
 import { ThemeLoaderManager } from './core/theme-loader';
+import { AddonOptions } from './indexers/AddonOptions';
 
 export async function experimental_indexers(
     existingIndexers: any[],
-    options: any = {}
+    options: any
 ) {
-    // TODO: Add support for toggling on/off paths, single file and organising where things should appear
-    // console.log(options.sections);
-    // console.log(options.multipleFile);
-    return [...existingIndexers, configIndexer, cssIndexer];
+    const addonOptions = new AddonOptions(
+        options.defaultPath,
+        options.sections,
+        options.singleFileName
+    );
+    return [
+        ...existingIndexers,
+        configIndexer(addonOptions),
+        cssIndexer(addonOptions),
+    ];
 }
 export const viteFinal = async (config: any, options: any) => {
     const { plugins = [] } = config;

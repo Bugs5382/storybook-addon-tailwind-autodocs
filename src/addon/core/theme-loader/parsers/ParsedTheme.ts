@@ -1,4 +1,3 @@
-// src/addon/core/theme-loader/parsers/ParsedTheme.ts
 import { ThemeCssVariables } from '../../../types';
 
 export class ParsedTheme {

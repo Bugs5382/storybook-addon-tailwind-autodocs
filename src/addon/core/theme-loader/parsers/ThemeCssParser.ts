@@ -69,8 +69,6 @@ export class ThemeCssParser {
     /**
      * Parse variable definitions from a theme block.
      */
-    // Replace the parseVariables method in src/addon/core/theme-loader/parsers/ThemeCssParser.ts
-
     private static parseVariables(
         block: string,
         variables: ThemeCssVariables,

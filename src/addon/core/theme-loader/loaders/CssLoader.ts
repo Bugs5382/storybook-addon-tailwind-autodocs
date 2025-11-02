@@ -1,4 +1,3 @@
-// src/addon/core/theme-loader/loaders/CssLoader.ts
 import { ThemeLoader } from './ThemeLoader';
 import {
     TAILWIND_CSS_REGEX,

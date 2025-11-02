@@ -1,4 +1,3 @@
-// src/addon/core/version-detection/PackageVersionDetector.ts
 import { resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { Logger } from '../../util';

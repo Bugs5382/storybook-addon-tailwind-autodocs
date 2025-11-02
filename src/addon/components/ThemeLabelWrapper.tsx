@@ -11,7 +11,6 @@ const TwAutodocsLabel = styled.div(({}) => ({
     display: 'flex',
     gap: '6px',
     alignItems: 'start',
-    paddingLeft: '22px',
     paddingTop: '5px',
     paddingBottom: '4px',
     backgroundColor: 'light-dark(#f6f9fc, #222425)',
@@ -50,13 +49,13 @@ interface Props {
 
 // Inspired by https://stackblitz.com/~/github.com/Sidnioulz/storybook-sidebar-urls
 const ThemeLabelWrapper = ({ item }: Props) => {
-    if (
-        item.tags?.includes('tailwind') &&
-        'parent' in item &&
-        item.parent !== undefined
-    ) {
+    if (item.tags?.includes('tailwind-autodocs') && item.type === 'story') {
         return (
-            <TwAutodocsLabel>
+            <TwAutodocsLabel
+                style={{
+                    paddingLeft: `${Math.max(item.depth - 1, 0) * 18 + 22}px`,
+                }}
+            >
                 <TwAutodocsLabelIcon>
                     <DocumentIcon />
                 </TwAutodocsLabelIcon>

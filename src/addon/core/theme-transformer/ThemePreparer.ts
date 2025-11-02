@@ -1,4 +1,3 @@
-// src/addon/core/theme-transformer/ThemePreparer.ts
 import { Color } from './Color';
 import { Typography } from '../../types';
 import { UnitConverter } from '../../util';

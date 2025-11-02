@@ -1,9 +1,9 @@
 import { createUnplugin } from 'unplugin';
 import { VIRTUAL_FILE_PREFIX } from './constants';
-import { AddonOptions } from './types';
+import { PluginOptions } from './types';
 import { ThemeTransformer } from './core/theme-transformer/ThemeTransformer';
 
-const unplugin = createUnplugin((options: AddonOptions) => {
+const unplugin = createUnplugin((options: PluginOptions) => {
     const themeLoader = options.themeLoader;
     const themeTransformer = new ThemeTransformer(); // TODO: Remember that any options passed in here could also be passed in by the user
 
