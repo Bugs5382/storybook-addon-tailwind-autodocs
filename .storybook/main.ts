@@ -7,7 +7,14 @@ const config: StorybookConfig = {
         '../src/style.css',
         // '../tailwind.config.js',
     ],
-    addons: ['@storybook/addon-links', '@storybook/addon-docs', '../preset.js'],
+    addons: [
+        '@storybook/addon-links',
+        '@storybook/addon-docs',
+        {
+            name: '../preset.js',
+            options: {},
+        },
+    ],
     framework: {
         name: '@storybook/react-vite',
         options: {},

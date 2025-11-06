@@ -1,4 +1,4 @@
-import { ResolvedConfig, Typography } from '../../types';
+import { ResolvedConfig } from '../../types';
 import { ThemePreparer } from './ThemePreparer';
 import { CsfGenerator } from './CsfGenerator';
 
@@ -6,9 +6,9 @@ export class ThemeTransformer {
     private preparer: ThemePreparer;
     private generator: CsfGenerator;
 
-    constructor(preparer?: ThemePreparer, generator?: CsfGenerator) {
+    constructor(generator: CsfGenerator, preparer?: ThemePreparer) {
+        this.generator = generator;
         this.preparer = preparer || new ThemePreparer();
-        this.generator = generator || new CsfGenerator();
     }
 
     public transformToCsf(config: ResolvedConfig): string {

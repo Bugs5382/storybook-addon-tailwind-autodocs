@@ -1,11 +1,12 @@
 import { createUnplugin } from 'unplugin';
 import { VIRTUAL_FILE_PREFIX } from './constants';
 import { PluginOptions } from './types';
-import { ThemeTransformer } from './core/theme-transformer/ThemeTransformer';
+import { CsfGenerator, ThemeTransformer } from './core/theme-transformer';
 
 const unplugin = createUnplugin((options: PluginOptions) => {
     const themeLoader = options.themeLoader;
-    const themeTransformer = new ThemeTransformer(); // TODO: Remember that any options passed in here could also be passed in by the user
+    const csfGenerator = new CsfGenerator(options.addonOptions);
+    const themeTransformer = new ThemeTransformer(csfGenerator);
 
     return {
         name: 'unplugin-tailwind-autodocs',

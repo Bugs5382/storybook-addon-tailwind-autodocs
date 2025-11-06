@@ -4,7 +4,7 @@ import type {
     IndexInput,
 } from 'storybook/internal/types';
 import { TAILWIND_CSS_REGEX } from '../constants';
-import { AddonOptions } from './AddonOptions';
+import { AddonOptions } from '../core/theme-transformer';
 import { indexInputs } from './indexInputs';
 
 export const cssIndexer = (addonOptions: AddonOptions): Indexer => {

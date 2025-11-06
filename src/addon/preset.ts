@@ -7,16 +7,17 @@ import { vite } from './unplugin';
 import { configIndexer } from './indexers';
 import { cssIndexer } from './indexers';
 import { ThemeLoaderManager } from './core/theme-loader';
-import { AddonOptions } from './indexers/AddonOptions';
+import { AddonOptions } from './core/theme-transformer';
 
 export async function experimental_indexers(
     existingIndexers: any[],
     options: any
 ) {
+    // TODO: Add themeLoader here but without logging? if themeLoader is null just returning the existingIndexers
     const addonOptions = new AddonOptions(
         options.defaultPath,
         options.sections,
-        options.singleFileName
+        options.forceSingleDoc
     );
     return [
         ...existingIndexers,
@@ -30,8 +31,21 @@ export const viteFinal = async (config: any, options: any) => {
         await options.presets.apply('stories');
     const themeLoaderManager = new ThemeLoaderManager(stories);
     const themeLoader = themeLoaderManager.getLoader();
-    if (themeLoader === null) return config; // Skip plugin injection
-    plugins.push(vite({ ...options, themeLoader: themeLoader }));
+
+    // Skip plugin injection if no theme loader is found
+    if (themeLoader === null) return config;
+
+    const addonOptions = new AddonOptions(
+        options.defaultPath,
+        options.sections,
+        options.forceSingleDoc
+    );
+    plugins.push(
+        vite({
+            themeLoader: themeLoader,
+            addonOptions: addonOptions,
+        })
+    );
     config.plugins = plugins;
     return config;
 };

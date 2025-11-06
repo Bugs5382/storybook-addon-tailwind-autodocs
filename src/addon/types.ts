@@ -1,5 +1,6 @@
 import { ThemeLoader } from './core/theme-loader';
 import { VALID_SECTIONS } from './constants';
+import { AddonOptions } from './core/theme-transformer';
 
 export interface PackageJson {
     dependencies?: Record<string, string>;
@@ -8,18 +9,23 @@ export interface PackageJson {
 
 export interface PluginOptions {
     themeLoader: ThemeLoader;
+    addonOptions: AddonOptions;
 }
 
-export type SectionInput =
-    | ValidSections
+export type TailwindConfigSections = (typeof VALID_SECTIONS)[number];
+
+export type SectionInput<NameType extends string> =
+    | NameType
     | {
-          name: ValidSections;
+          name: NameType;
           path?: string;
       };
-export type ValidSections = (typeof VALID_SECTIONS)[number];
 
-export interface Section {
-    name: ValidSections;
+export type TailwindSectionInput = SectionInput<TailwindConfigSections>;
+export type CustomSectionInput = SectionInput<string>;
+
+export interface NormalizedSection {
+    name: string;
     path: string;
 }
 

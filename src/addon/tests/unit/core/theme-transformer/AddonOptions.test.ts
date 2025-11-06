@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AddonOptions } from '../../../indexers/AddonOptions';
+import { AddonOptions } from '../../../../core/theme-transformer';
 
 describe('AddonOptions', () => {
     describe('validation', () => {
@@ -21,49 +21,81 @@ describe('AddonOptions', () => {
             );
         });
 
+        it("doesn't throw for empty sections array", () => {
+            expect(() => new AddonOptions('Base/', [])).not.toThrow();
+        });
+
         it('throws for invalid section string', () => {
             expect(() => new AddonOptions('Base/', ['InvalidSection'])).toThrow(
-                'Invalid section: must be a valid string or name and optional path'
+                'Invalid section: must be a valid tailwind section string or name and optional path'
             );
         });
 
         it('throws for invalid section object name', () => {
             const invalidSection = { name: 'InvalidSection', path: 'Path' };
             expect(() => new AddonOptions('Base/', [invalidSection])).toThrow(
-                'Invalid section: must be a valid string or name and optional path'
+                'Invalid section: must be a valid tailwind section string or name and optional path'
             );
         });
 
         it('throws for empty section.path', () => {
             const invalidSection = { name: 'Colors', path: '' };
             expect(() => new AddonOptions('Base/', [invalidSection])).toThrow(
-                'Invalid section: must be a valid string or name and optional path'
+                'Invalid section: must be a valid tailwind section string or name and optional path'
             );
         });
 
         it('throws for whitespace-only section.path', () => {
             const invalidSection = { name: 'Colors', path: '   ' };
             expect(() => new AddonOptions('Base/', [invalidSection])).toThrow(
-                'Invalid section: must be a valid string or name and optional path'
+                'Invalid section: must be a valid tailwind section string or name and optional path'
             );
         });
 
         it('throws for non-string section.path', () => {
             const invalidSection = { name: 'Colors', path: 123 as any };
             expect(() => new AddonOptions('Base/', [invalidSection])).toThrow(
-                'Invalid section: must be a valid string or name and optional path'
+                'Invalid section: must be a valid tailwind section string or name and optional path'
             );
         });
 
-        it('throws for empty singleFileName', () => {
+        it('throws for invalid forceSingleDoc object', () => {
+            expect(
+                () =>
+                    new AddonOptions('Base/', ['Colors'], {
+                        name: 'Colors',
+                        path: '',
+                    })
+            ).toThrow(
+                'Invalid single doc: must be a valid string or name and optional path'
+            );
+        });
+
+        it('accepts valid forceSingleDoc object', () => {
+            expect(
+                () =>
+                    new AddonOptions('Base/', ['Colors'], {
+                        name: 'Colors',
+                        path: 'Base/Colors',
+                    })
+            ).not.toThrow();
+        });
+
+        it('accepts valid forceSingleDoc string', () => {
+            expect(
+                () => new AddonOptions('Base/', ['Colors'], 'Colors')
+            ).not.toThrow();
+        });
+
+        it('throws for empty forceSingleDoc string', () => {
             expect(() => new AddonOptions('Base/', ['Colors'], '')).toThrow(
-                'singleFileName must be a non-empty string if defined'
+                'Invalid single doc: must be a valid string or name and optional path'
             );
         });
 
-        it('throws for whitespace singleFileName', () => {
+        it('throws for whitespace forceSingleDoc string', () => {
             expect(() => new AddonOptions('Base/', ['Colors'], '   ')).toThrow(
-                'singleFileName must be a non-empty string if defined'
+                'Invalid single doc: must be a valid string or name and optional path'
             );
         });
     });
@@ -165,26 +197,60 @@ describe('AddonOptions', () => {
                 { name: 'Typography', path: 'Typography' },
             ]);
         });
+
+        it('handles duplicate section names', () => {
+            const options = new AddonOptions('Base/', [
+                'Colors',
+                { name: 'Colors', path: 'Base/Custom' },
+            ]);
+            expect(options.sections).toEqual([
+                { name: 'Colors', path: 'Base/Colors' },
+                { name: 'Colors', path: 'Base/Custom' },
+            ]);
+        });
+
+        it('handles empty sections array', () => {
+            const options = new AddonOptions('Base/', []);
+            expect(options.sections).toEqual([]);
+        });
     });
 
-    describe('singleFileName', () => {
-        it('sets singleFileName when provided', () => {
-            const options = new AddonOptions('Base/', ['Colors'], 'MyTheme');
-            expect(options.singleFileName).toBe('MyTheme');
+    describe('forceSingleDoc', () => {
+        it('sets forceSingleDoc when provided as object', () => {
+            const override = { name: 'Colors', path: 'MyPath' };
+            const options = new AddonOptions('Base/', ['Colors'], override);
+            expect(options.forceSingleDoc).toEqual(override);
         });
 
-        it('singleFileName is undefined when not provided', () => {
+        it('sets forceSingleDoc when provided as string', () => {
+            const options = new AddonOptions('Base/', ['Colors'], 'Colors');
+            expect(options.forceSingleDoc).toEqual({
+                name: 'Colors',
+                path: 'Base/Colors',
+            });
+        });
+
+        it('normalizes forceSingleDoc with path ending slash', () => {
+            const override = { name: 'Colors', path: 'Base/' };
+            const options = new AddonOptions('Base/', ['Colors'], override);
+            expect(options.forceSingleDoc).toEqual({
+                name: 'Colors',
+                path: 'Base/Colors',
+            });
+        });
+
+        it('normalizes forceSingleDoc with path "/"', () => {
+            const override = { name: 'Colors', path: '/' };
+            const options = new AddonOptions('Base/', ['Colors'], override);
+            expect(options.forceSingleDoc).toEqual({
+                name: 'Colors',
+                path: 'Colors',
+            });
+        });
+
+        it('forceSingleDoc is undefined when not provided', () => {
             const options = new AddonOptions('Base/', ['Colors']);
-            expect(options.singleFileName).toBeUndefined();
-        });
-
-        it('accepts singleFileName with surrounding whitespace', () => {
-            const options = new AddonOptions(
-                'Base/',
-                ['Colors'],
-                '  MyTheme  '
-            );
-            expect(options.singleFileName).toBe('  MyTheme  ');
+            expect(options.forceSingleDoc).toBeUndefined();
         });
     });
 });
