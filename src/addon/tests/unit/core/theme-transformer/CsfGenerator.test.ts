@@ -89,8 +89,8 @@ describe('CsfGenerator', () => {
 
     it('generates single story when forceSingleDoc is set', () => {
         mockAddonOptions.forceSingleDoc = {
-            name: 'AllTheme',
-            path: 'Theme/AllTheme',
+            name: 'All Theme',
+            path: 'Theme/All Theme',
         };
         const generator = new CsfGenerator(mockAddonOptions);
         const result = generator.generate([], {
@@ -155,8 +155,8 @@ describe('CsfGenerator', () => {
             { name: 'Typography', path: 'Theme/Typography' },
         ];
         mockAddonOptions.forceSingleDoc = {
-            name: 'AllTheme',
-            path: 'Theme/AllTheme',
+            name: 'All Theme',
+            path: 'Theme/All Theme',
         };
         const generator = new CsfGenerator(mockAddonOptions);
         const result = generator.generate([], {
