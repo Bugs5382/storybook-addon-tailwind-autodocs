@@ -1,8 +1,4 @@
-import {
-    Indexer,
-    PresetValue,
-    StorybookConfigRaw,
-} from 'storybook/internal/types';
+import { PresetValue, StorybookConfigRaw } from 'storybook/internal/types';
 import { vite } from './unplugin';
 import { configIndexer } from './indexers';
 import { cssIndexer } from './indexers';
