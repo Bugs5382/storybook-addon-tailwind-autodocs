@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { mockRequireModule, restoreRequireModule } from '../mockRequireModule';
-import { Color } from '../../../../core/theme-transformer/Color';
+import { Color } from '../../../../core/theme-transformer';
 
 const v4TailwindColorsMock = {
     red: {

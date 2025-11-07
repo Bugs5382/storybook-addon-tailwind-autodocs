@@ -5,7 +5,7 @@ import type {
 } from 'storybook/internal/types';
 import { TAILWIND_CONFIG_REGEX } from '../constants';
 import { indexInputs } from './indexInputs';
-import { AddonOptions } from '../core/theme-transformer/AddonOptions';
+import { AddonOptions } from '../core/theme-transformer';
 
 export const configIndexer = (addonOptions: AddonOptions): Indexer => {
     return {
