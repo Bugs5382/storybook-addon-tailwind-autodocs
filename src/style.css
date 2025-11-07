@@ -1,13 +1,18 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
+    --color-lagoon: oklch(0.72 0.11 221.19);
+    --color-coral: oklch(0.74 0.17 40.24);
+    --color-driftwood: oklch(0.79 0.06 74.59);
+    --color-tide: oklch(0.49 0.08 205.88);
+    --color-red-440: #ff3202;
     --color-red-ish-100: #ff0040;
     --color-red-ish-200: #f12000;
     --color-red-ish-300: #ff3202;
     --color-red-ish-400: #ff0220;
     --color-red-ish-500: #ff0120;
 
-    --font-size-xxs: 5rem;
-
     --font-inter: Inter, sans-serif;
+    --font-weight-bolder: 750;
+    --text-xxs: 0.625rem;
 }

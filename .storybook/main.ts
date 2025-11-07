@@ -5,16 +5,8 @@ const config: StorybookConfig = {
         '../src/**/*.mdx',
         '../src/**/*.stories.@(js|jsx|ts|tsx)',
         '../src/style.css',
-        // '../tailwind.config.js',
     ],
-    addons: [
-        '@storybook/addon-links',
-        '@storybook/addon-docs',
-        {
-            name: '../preset.js',
-            options: {},
-        },
-    ],
+    addons: ['@storybook/addon-links', '@storybook/addon-docs', '../preset.js'],
     framework: {
         name: '@storybook/react-vite',
         options: {},
