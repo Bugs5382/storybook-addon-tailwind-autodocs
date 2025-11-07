@@ -1,3 +1,41 @@
+# v2.0.0 (Fri Nov 07 2025)
+
+#### 💥 Breaking Change
+
+
+#### 🐛 Bug Fix
+
+- Feature: Adding Tailwind CSS v4 support [#21](https://github.com/matanio/storybook-addon-tailwind-autodocs/pull/21) ([@matanio](https://github.com/matanio))
+
+#### ⚠️ Pushed to `main`
+
+- Update README.md ([@matanio](https://github.com/matanio))
+
+#### 📝 Documentation
+
+- docs: added comments re: Indexer API [#18](https://github.com/matanio/storybook-addon-tailwind-autodocs/pull/18) ([@matanio](https://github.com/matanio))
+
+#### 🧪 Tests
+
+- Add unit tests for the key helper functions [#5](https://github.com/matanio/storybook-addon-tailwind-autodocs/pull/5) ([@matanio](https://github.com/matanio))
+
+#### 🔩 Dependency Updates
+
+- chore(deps): bump cookie and express [#13](https://github.com/matanio/storybook-addon-tailwind-autodocs/pull/13) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- chore(deps-dev): bump vite from 5.4.8 to 5.4.14 [#14](https://github.com/matanio/storybook-addon-tailwind-autodocs/pull/14) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- chore(deps): bump rollup from 4.19.1 to 4.22.5 [#7](https://github.com/matanio/storybook-addon-tailwind-autodocs/pull/7) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- chore(deps-dev): bump vite from 5.3.5 to 5.4.8 [#9](https://github.com/matanio/storybook-addon-tailwind-autodocs/pull/9) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- chore(deps): bump serve-static and express [#10](https://github.com/matanio/storybook-addon-tailwind-autodocs/pull/10) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- chore(deps): bump send and express [#11](https://github.com/matanio/storybook-addon-tailwind-autodocs/pull/11) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- chore(deps): bump body-parser and express [#12](https://github.com/matanio/storybook-addon-tailwind-autodocs/pull/12) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Matan Yosef ([@matanio](https://github.com/matanio))
+
+---
+
 # v1.0.8 (Thu Aug 15 2024)
 
 #### ⚠️ Pushed to `main`
