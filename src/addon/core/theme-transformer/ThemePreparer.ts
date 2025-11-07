@@ -30,19 +30,41 @@ export class ThemePreparer {
         const fontFamilyStrings = this.getFontFamiliesAsStrings(fontFamilies);
         return {
             type: fontFamilyStrings,
-            weight: fontWeights,
+            weight: this.sortFontWeights(fontWeights),
             size: extractedFontSizes,
         };
     }
 
     private getFontFamiliesAsStrings(
-        fontFamilies: Record<string, string[]>
+        fontFamilies: Record<string, any>
     ): Record<string, string> {
         return Object.fromEntries(
             Object.entries(fontFamilies).map(([key, value]) => [
                 key,
                 value.join(', '),
             ])
+        );
+    }
+
+    private sortFontWeights(
+        fontWeights: Record<string, string>
+    ): Record<string, string> {
+        return Object.fromEntries(
+            Object.entries(fontWeights).sort(([, weightA], [, weightB]) => {
+                const numA =
+                    weightA === 'normal'
+                        ? 400
+                        : weightA === 'bold'
+                          ? 700
+                          : parseFloat(weightA);
+                const numB =
+                    weightB === 'normal'
+                        ? 400
+                        : weightB === 'bold'
+                          ? 700
+                          : parseFloat(weightB);
+                return numA - numB;
+            })
         );
     }
 

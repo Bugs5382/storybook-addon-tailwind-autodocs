@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import { mockRequireModule, restoreRequireModule } from '../mockRequireModule';
-import { ThemePreparer } from '../../../../core/theme-transformer/ThemePreparer';
+import { ThemePreparer } from '../../../../core/theme-transformer';
 
 const MOCK_TAILWIND_COLORS = {
     red: {
@@ -155,14 +155,62 @@ describe('ThemePreparer', () => {
             });
         });
 
-        it('passes font weights through unchanged', () => {
-            const fontWeights = { normal: '400', bold: '700', light: '300' };
+        it('sorts font weights with named values', () => {
+            const fontWeights = {
+                bold: 'bold',
+                light: '300',
+                normal: 'normal',
+                extraBold: '800',
+            };
             const result = preparer.prepareTypographyForCsf(
                 {},
                 fontWeights,
                 {}
             );
-            expect(result.weight).toEqual(fontWeights);
+            expect(Object.keys(result.weight)).toEqual([
+                'light',
+                'normal',
+                'bold',
+                'extraBold',
+            ]);
+        });
+
+        it('sorts font weights with numeric strings', () => {
+            const fontWeights = {
+                extraBold: '800',
+                light: '300',
+                normal: '400',
+                semiBold: '600',
+            };
+            const result = preparer.prepareTypographyForCsf(
+                {},
+                fontWeights,
+                {}
+            );
+            expect(Object.keys(result.weight)).toEqual([
+                'light',
+                'normal',
+                'semiBold',
+                'extraBold',
+            ]);
+        });
+
+        it('handles edge case numeric font weights (1-1000 range)', () => {
+            const fontWeights = {
+                custom950: '950',
+                thin: '100',
+                medium: '500',
+            };
+            const result = preparer.prepareTypographyForCsf(
+                {},
+                fontWeights,
+                {}
+            );
+            expect(Object.keys(result.weight)).toEqual([
+                'thin',
+                'medium',
+                'custom950',
+            ]);
         });
 
         it('returns empty weight object for empty fontWeights', () => {
