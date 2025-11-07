@@ -1,33 +1,49 @@
-import type { Indexer, IndexInput } from '@storybook/types';
-import { TAILWIND_REGEX, vite, webpack } from './unplugin';
+import { PresetValue, StorybookConfigRaw } from 'storybook/internal/types';
+import { vite } from './unplugin';
+import { configIndexer } from './indexers';
+import { cssIndexer } from './indexers';
+import { ThemeLoaderManager } from './core/theme-loader';
+import { AddonOptions } from './core/theme-transformer';
 
-const dynamicIndexer: Indexer = {
-    test: TAILWIND_REGEX,
-    createIndex: async () => {
-        return [
-            {
-                type: 'docs',
-                exportName: '__docs',
-                name: 'Docs',
-                title: 'Theme',
-                tags: ['autodocs'],
-            } as IndexInput,
-        ];
-    },
-};
-
-export const experimental_indexers: Indexer[] = [dynamicIndexer];
-
-export const viteFinal = async (config: any) => {
+export async function experimental_indexers(
+    existingIndexers: any[],
+    options: any
+) {
+    // TODO: Add themeLoader here but without logging? if themeLoader is null just returning the existingIndexers
+    const addonOptions = new AddonOptions(
+        options.defaultPath,
+        options.sections,
+        options.forceSingleDoc
+    );
+    return [
+        ...existingIndexers,
+        configIndexer(addonOptions),
+        cssIndexer(addonOptions),
+    ];
+}
+export const viteFinal = async (config: any, options: any) => {
     const { plugins = [] } = config;
-    plugins.push(vite({}));
+    const stories: PresetValue<StorybookConfigRaw['stories']> =
+        await options.presets.apply('stories');
+    const themeLoaderManager = new ThemeLoaderManager(stories);
+    const themeLoader = themeLoaderManager.getLoader();
+
+    // Skip plugin injection if no theme loader is found
+    if (themeLoader === null) return config;
+
+    const addonOptions = new AddonOptions(
+        options.defaultPath,
+        options.sections,
+        options.forceSingleDoc
+    );
+    plugins.push(
+        vite({
+            themeLoader: themeLoader,
+            addonOptions: addonOptions,
+        })
+    );
     config.plugins = plugins;
     return config;
 };
 
-export const webpackFinal = async (config: any) => {
-    const { plugins = [] } = config;
-    plugins.push(webpack({}));
-    config.plugins = plugins;
-    return config;
-};
+// TODO: Webpack support

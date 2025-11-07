@@ -15,6 +15,7 @@ type BundlerConfig = {
     bundler?: {
         exportEntries?: string[];
         nodeEntries?: string[];
+        managerEntries?: string[];
     };
 };
 
@@ -24,21 +25,30 @@ export default defineConfig(async options => {
     //  ...
     //   "bundler": {
     //     "exportEntries": ["./src/index.ts"],
+    //     "managerEntries": ["./src/manager.ts"],
     //     "nodeEntries": ["./src/preset.ts"]
     //   }
     // }
     const packageJson = (await readFile('./package.json', 'utf8').then(
         JSON.parse
     )) as BundlerConfig;
-    const { bundler: { exportEntries = [], nodeEntries = [] } = {} } =
-        packageJson;
+    const {
+        bundler: {
+            exportEntries = [],
+            managerEntries = [],
+            nodeEntries = [],
+        } = {},
+    } = packageJson;
 
     const commonConfig: Options = {
         splitting: false,
         minify: !options.watch,
         treeshake: true,
         sourcemap: true,
-        clean: options.watch ? false : true,
+        // keep this line commented until https://github.com/egoist/tsup/issues/1270 is resolved
+        // clean: options.watch ? false : true,
+        clean: false,
+        external: ['tailwindcss'],
     };
 
     const configs: Options[] = [];
@@ -57,6 +67,20 @@ export default defineConfig(async options => {
             target: [...BROWSER_TARGET, ...NODE_TARGET],
             platform: 'neutral',
             external: [...globalManagerPackages, ...globalPreviewPackages],
+        });
+    }
+
+    // manager entries are entries meant to be loaded into the manager UI
+    // they'll have manager-specific packages externalized and they won't be usable in node
+    // they won't have types generated for them as they're usually loaded automatically by Storybook
+    if (managerEntries.length) {
+        configs.push({
+            ...commonConfig,
+            entry: managerEntries,
+            format: ['esm'],
+            platform: 'browser',
+            target: BROWSER_TARGET,
+            external: globalManagerPackages,
         });
     }
 
