@@ -1,3 +1,15 @@
+# v2.0.1 (Fri Nov 07 2025)
+
+#### ⚠️ Pushed to `main`
+
+- ci: update Node.js version in Storybook workflow ([@matanio](https://github.com/matanio))
+
+#### Authors: 1
+
+- Matan Yosef ([@matanio](https://github.com/matanio))
+
+---
+
 # v2.0.0 (Fri Nov 07 2025)
 
 #### 💥 Breaking Change
