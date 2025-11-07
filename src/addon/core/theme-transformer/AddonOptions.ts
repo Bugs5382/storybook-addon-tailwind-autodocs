@@ -36,7 +36,6 @@ export class AddonOptions {
             throw new Error('sections must be an array');
         }
         for (const section of sections) {
-            console.log(section);
             if (this.isValidSectionName(section)) {
                 continue;
             }

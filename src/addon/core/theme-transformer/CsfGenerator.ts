@@ -1,6 +1,7 @@
 import { Color } from './Color';
 import { Typography } from '../../types';
 import { AddonOptions } from './AddonOptions';
+import { sanitizeExportName } from '../../util';
 
 export class CsfGenerator {
     private addonOptions: AddonOptions;
@@ -19,7 +20,7 @@ export class CsfGenerator {
             return this.generateSingleStory(
                 colors,
                 typography,
-                this.addonOptions.forceSingleDoc.name
+                sanitizeExportName(this.addonOptions.forceSingleDoc.name)
             );
         }
         // Otherwise generate story per enabled section
