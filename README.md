@@ -7,7 +7,7 @@ Demo: [Storybook](https://matanio.github.io/storybook-addon-tailwind-autodocs/)*
 _*This uses the [`index.css`](https://github.com/matanio/storybook-addon-tailwind-autodocs/blob/main/src/style.css) file from this project_
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/d7e2da9b-a674-44d6-9638-484073990921" />
+  <img src="https://github.com/user-attachments/assets/5347308d-ddc0-40c6-9e44-fa0627f21efe" />
 </p>
 
 ## Features
